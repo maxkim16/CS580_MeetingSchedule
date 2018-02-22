@@ -14,7 +14,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -57,6 +59,8 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
         }
     }
     
+    // Before displaying rooms in JTable, first store each room as an object
+    // make them a list
     public ArrayList<RoomDB> getRoomList()
     {
         // each roomDB object has its number and size
@@ -76,27 +80,7 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                 room = new RoomDB(rs.getInt("id"), rs.getInt("size"));
                 // add new rooms (number, size) to the list
                 roomList.add(room);
-            }
-            
-             //Get meta data on just opened result set
-            ResultSetMetaData rsMeta = rs.getMetaData();
-
-         // Display Column names as string
-            String varColNames = "";
-            int varColCount = rsMeta.getColumnCount();
-            for (int col = 1; col <= varColCount; col++) {
-                varColNames = varColNames + rsMeta.getColumnName(col) + " ";
-            }
-            System.out.println(varColNames);
-
-        //Display column values
-            while (rs.next()) {
-                for (int col = 1; col <= varColCount; col++) {
-                    System.out.print(rs.getString(col) + " ");
-                }
-                System.out.println();
-            }
-            
+            }    
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,8 +101,34 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
             row[1] = list.get(i).getSize();
             model.addRow(row);
         }
-
     }
+    
+    // Execute The SQL Query
+    public void executeSQLQuery(String query, String message)
+    {
+        Connection con = getConnection();
+        Statement st;
+        try{
+            st = con.createStatement();
+            if((st.executeUpdate(query)) == 1)
+            {
+                // refresh jtable data
+                DefaultTableModel model = (DefaultTableModel)jTableDisplayRooms.getModel();
+                model.setRowCount(0);
+                Show_Room_In_JTable();
+                
+                // Display the message
+                JOptionPane.showMessageDialog(null, "Data " + message + " Successfully");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Data " + message + " not Not Successfully");   
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+        
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -136,7 +146,6 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableDisplayRooms = new javax.swing.JTable();
         jButtonInsert = new javax.swing.JButton();
-        jButtonUpdate = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -158,17 +167,29 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                 "Room Number", "Room Size"
             }
         ));
+        jTableDisplayRooms.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableDisplayRoomsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableDisplayRooms);
 
         jButtonInsert.setBackground(new java.awt.Color(204, 255, 204));
         jButtonInsert.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jButtonInsert.setText("Insert");
-
-        jButtonUpdate.setBackground(new java.awt.Color(255, 255, 204));
-        jButtonUpdate.setText("Update");
+        jButtonInsert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonInsertActionPerformed(evt);
+            }
+        });
 
         jButtonDelete.setBackground(new java.awt.Color(255, 153, 153));
         jButtonDelete.setText("Delete");
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -179,9 +200,7 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                        .addGap(123, 123, 123))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -194,9 +213,7 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                             .addComponent(TxtFdRoomNum, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
                             .addComponent(TxtFdRoomSize))
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -218,14 +235,37 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                         .addGap(90, 90, 90)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(86, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jTableDisplayRoomsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDisplayRoomsMouseClicked
+        // Display Selected Row in JTextFields
+        int i = jTableDisplayRooms.getSelectedRow();
+        TableModel model = jTableDisplayRooms.getModel();
+        TxtFdRoomNum.setText(model.getValueAt(i, 0).toString());
+        TxtFdRoomSize.setText(model.getValueAt(i, 1).toString());
+    }//GEN-LAST:event_jTableDisplayRoomsMouseClicked
+
+    // Insert a new room
+    private void jButtonInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertActionPerformed
+        String query = "INSERT INTO `rooms`(`id`, `size`) VALUES (" + TxtFdRoomNum.getText() +
+                "," + TxtFdRoomSize.getText() + ")";
+        executeSQLQuery(query, "Inserted");
+    }//GEN-LAST:event_jButtonInsertActionPerformed
+
+    // Delete a room
+    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
+        String query = "DELETE FROM `rooms` WHERE `id` = " + TxtFdRoomNum.getText() + 
+                " AND `size` = " + TxtFdRoomSize.getText() + ";";
+        executeSQLQuery(query, "Deleted");
+    }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    /*    */
+    
     /**
      * @param args the command line arguments
      */
@@ -268,7 +308,6 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
     private javax.swing.JTextField TxtFdRoomSize;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonInsert;
-    private javax.swing.JButton jButtonUpdate;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableDisplayRooms;
     // End of variables declaration//GEN-END:variables

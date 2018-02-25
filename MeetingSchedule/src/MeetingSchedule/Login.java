@@ -7,6 +7,11 @@ package MeetingSchedule;
 import javax.swing.JOptionPane;
 import java.awt.Toolkit;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  *
@@ -28,8 +33,39 @@ public class Login extends javax.swing.JFrame {
         // myInitComponents();
     }
 
-    // Check to see if the right id and password is entered for admin account
-    public Boolean verifyAdmin() {
+    // Check if the right id and password are entered for employee accounts
+    private Boolean verifyEmp() {
+        
+        String user = jTextName.getText();
+        String pw = jTextPswd.getText();
+        
+        DBconnector db = new DBconnector();
+        // connect to database 
+        Connection connection = db.connectToDB();
+        
+        ResultSet rs;
+        Statement st;
+        try {
+            st = connection.createStatement();
+            if (user != null && pw != null) {
+            String sql = "SELECT * FROM `employees` WHERE `username` = '" + user + "' AND"
+                    + " `pswd` = MD5(" + pw + ");";
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(this, "valid user");
+            } else {
+                JOptionPane.showMessageDialog(this, "invalid user.Please try again");
+            }
+        }
+        
+        } catch (SQLException err) {
+         JOptionPane.showMessageDialog(this, err.getMessage());
+        }
+        return null;
+    }
+    
+    // Check to see if the right id and password are entered for the admin account
+    private Boolean verifyAdmin() {
         System.out.println(jTextName.getText());
         System.out.println(jTextPswd.getText());
 
@@ -59,8 +95,8 @@ public class Login extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jTextName = new javax.swing.JTextField();
         jTextPswd = new javax.swing.JPasswordField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonLogin = new javax.swing.JButton();
+        jButtonAdmLogin = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -77,19 +113,19 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(255, 204, 255));
-        jButton1.setText("Login");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonLogin.setBackground(new java.awt.Color(255, 204, 255));
+        jButtonLogin.setText("Login");
+        jButtonLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonLoginActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(255, 204, 255));
-        jButton2.setText("Admin Login");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonAdmLogin.setBackground(new java.awt.Color(255, 204, 255));
+        jButtonAdmLogin.setText("Admin Login");
+        jButtonAdmLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonAdmLoginActionPerformed(evt);
             }
         });
 
@@ -111,9 +147,9 @@ public class Login extends javax.swing.JFrame {
                             .addComponent(jTextPswd, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(16, 16, 16)
-                        .addComponent(jButton1)
+                        .addComponent(jButtonLogin)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton2)))
+                        .addComponent(jButtonAdmLogin)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -129,8 +165,8 @@ public class Login extends javax.swing.JFrame {
                     .addComponent(jTextPswd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jButtonLogin)
+                    .addComponent(jButtonAdmLogin))
                 .addContainerGap(108, Short.MAX_VALUE))
         );
 
@@ -170,13 +206,12 @@ public class Login extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_jTextPswdActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
         // TODO add your handling code here:
-        Calendar cal = new Calendar();
-        cal.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+        verifyEmp();
+    }//GEN-LAST:event_jButtonLoginActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButtonAdmLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAdmLoginActionPerformed
         // TODO add your handling code here:
         if( verifyAdmin()) {
             Admin admin = new Admin();
@@ -189,7 +224,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Admin login failed.Please try again");
         }
        
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jButtonAdmLoginActionPerformed
 
     /**
      * @param args the command line arguments
@@ -227,8 +262,8 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonAdmLogin;
+    private javax.swing.JButton jButtonLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

@@ -42,16 +42,17 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         Connection connection = db.connectToDB();
         String query = "SELECT * FROM `employees`";
         Statement st;
-        ResultSet rs = db.getQueryResult(query);
+        ResultSet rs;
         
         try {
             st = connection.createStatement();
             // get the SQL query result
             rs = st.executeQuery(query);
             EmpDB emp;
+            // Loops until the last row from the rows retrrieved 
             while(rs.next()) {
                 // store SQL result's first and second column 
-                emp = new EmpDB(rs.getInt("id"),rs.getString("name"), rs.getString("pswd"));
+                emp = new EmpDB(rs.getString("name"), rs.getString("username"), rs.getString("pswd"));
                 // add new rooms (number, size) to the list
                 empList.add(emp);
             }    
@@ -72,8 +73,8 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         Object[] row = new Object[3];
         for (int i = 0; i < list.size(); i++) 
         {
-            row[0] = list.get(i).getID();
-            row[1] = list.get(i).getName();
+            row[0] = list.get(i).getName();
+            row[1] = list.get(i).getUsername();
             row[2] = list.get(i).getPassword();
             model.addRow(row);
         }
@@ -128,12 +129,11 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         jButtonInsert = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
         LabelName = new javax.swing.JLabel();
-        LabelID = new javax.swing.JLabel();
-        TxtFdID = new javax.swing.JTextField();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         jLabel1 = new javax.swing.JLabel();
         jButtonModifyPW = new javax.swing.JButton();
+        LabelUsername = new javax.swing.JLabel();
+        TxtFdUsername = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -148,7 +148,7 @@ public class EmpInsertDelete extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Name", "Password(Hashed)"
+                "Name", "Username", "Password(Hashed)"
             }
         ));
         jTableDisplayEmployees.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -177,21 +177,6 @@ public class EmpInsertDelete extends javax.swing.JFrame {
 
         LabelName.setText("Name:");
 
-        LabelID.setText("ID:");
-
-        TxtFdID.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
-        TxtFdID.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TxtFdIDMouseClicked(evt);
-            }
-        });
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setForeground(new java.awt.Color(204, 51, 0));
-        jTextArea1.setRows(5);
-        jTextArea1.setText("Please read the following:\nFor Insert, enter only Name and Password.\nFor Delete, enter only ID.\nFor Reset Password, enter only ID and a new \npassword.");
-        jScrollPane2.setViewportView(jTextArea1);
-
         jLabel1.setBackground(new java.awt.Color(204, 255, 255));
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel1.setText("Employees");
@@ -205,6 +190,14 @@ public class EmpInsertDelete extends javax.swing.JFrame {
             }
         });
 
+        LabelUsername.setText("Username:");
+
+        TxtFdUsername.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 0, 0));
+        jLabel2.setText("(numeric)");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -212,36 +205,31 @@ public class EmpInsertDelete extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(123, 123, 123))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(42, 42, 42)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(LabelName)
-                                    .addComponent(LabelPassword)
-                                    .addComponent(LabelID))
-                                .addGap(32, 32, 32)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(TxtFdName, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                                    .addComponent(TxtFdPswd)
-                                    .addComponent(TxtFdID))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap()
+                        .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(113, 113, 113)
+                                .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(107, 107, 107)
-                                .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
+                                .addGap(42, 42, 42)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel2)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(LabelName)
+                                            .addComponent(LabelPassword)
+                                            .addComponent(LabelUsername))
+                                        .addGap(132, 132, 132)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(TxtFdName, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                                            .addComponent(TxtFdPswd)
+                                            .addComponent(TxtFdUsername, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE))))))
+                        .addGap(0, 49, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -256,68 +244,65 @@ public class EmpInsertDelete extends javax.swing.JFrame {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(LabelName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(TxtFdName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(LabelUsername, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TxtFdUsername, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(LabelPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(TxtFdPswd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(LabelID, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(TxtFdID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2)
+                        .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(28, 28, 28)
+                        .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    // fill in the text fields when a row is clicked in the table
     private void jTableDisplayEmployeesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableDisplayEmployeesMouseClicked
         // Display Selected Row in JTextFields
         int i = jTableDisplayEmployees.getSelectedRow();
         TableModel model = jTableDisplayEmployees.getModel();
-        TxtFdID.setText(model.getValueAt(i, 0).toString());
-        TxtFdName.setText(model.getValueAt(i, 1).toString());
+        // TxtFdID.setText(model.getValueAt(i, 0).toString());
+        TxtFdName.setText(model.getValueAt(i, 0).toString());
+        TxtFdUsername.setText(model.getValueAt(i, 1).toString());
         TxtFdPswd.setText(model.getValueAt(i, 2).toString());
 
     }//GEN-LAST:event_jTableDisplayEmployeesMouseClicked
 
-    // Password is hashed using MD5
+    // add a new employee
     private void jButtonInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertActionPerformed
-        String query = "INSERT INTO `employees`(`name`, `pswd`) VALUES ('" + TxtFdName.getText() +
-        "', MD5(" + TxtFdPswd.getText() + "));";
+        String query = "INSERT INTO `employees`(`name`, `username`, `pswd`) VALUES ('" + TxtFdName.getText() +
+            "', '" + TxtFdUsername.getText() + "', MD5(" + TxtFdPswd.getText() + "));";
         executeSQLQuery(query, "Inserted");
     }//GEN-LAST:event_jButtonInsertActionPerformed
     
     // Password is hashed using MD5
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        String query = "DELETE FROM `employees` WHERE `id` = " + TxtFdID.getText() + ";";
+        String query = "DELETE FROM `employees` WHERE `username` = '" + TxtFdUsername.getText() + "';";
         executeSQLQuery(query, "Deleted");
     }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     private void jButtonModifyPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyPWActionPerformed
         // TODO add your handling code here:
-        String query = "UPDATE `employees` SET `pswd` = MD5(" + TxtFdPswd.getText() + ") WHERE `id` = " +
-                "'" + TxtFdID.getText() + "';";
+        String query = "UPDATE `employees` SET `pswd` = MD5(" + TxtFdPswd.getText() + ") WHERE `username` = " +
+                "'" + TxtFdUsername.getText() + "';";
         executeSQLQuery(query, "Password Reset");
     }//GEN-LAST:event_jButtonModifyPWActionPerformed
-
-    private void TxtFdIDMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtFdIDMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TxtFdIDMouseClicked
 
     /**
      * @param args the command line arguments
@@ -355,19 +340,18 @@ public class EmpInsertDelete extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel LabelID;
     private javax.swing.JLabel LabelName;
     private javax.swing.JLabel LabelPassword;
-    private javax.swing.JTextField TxtFdID;
+    private javax.swing.JLabel LabelUsername;
     private javax.swing.JTextField TxtFdName;
     private javax.swing.JTextField TxtFdPswd;
+    private javax.swing.JTextField TxtFdUsername;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonInsert;
     private javax.swing.JButton jButtonModifyPW;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableDisplayEmployees;
-    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }

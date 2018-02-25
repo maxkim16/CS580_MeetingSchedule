@@ -24,6 +24,9 @@ public class EmpInsertDelete extends javax.swing.JFrame {
      */
     public EmpInsertDelete() {
         initComponents();
+        // Another InitComponent is created to prevent from terminating the application 
+        // when a JFrame is closed
+        myInitComponents();
         Show_Emp_In_JTable();        
     }
 
@@ -103,6 +106,11 @@ public class EmpInsertDelete extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
+    
+    // This method prvents from terminating an application when this JFrame is closed
+    private void myInitComponents() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -124,6 +132,8 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         TxtFdID = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        jButtonModifyPW = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -170,12 +180,30 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         LabelID.setText("ID:");
 
         TxtFdID.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
+        TxtFdID.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TxtFdIDMouseClicked(evt);
+            }
+        });
 
         jTextArea1.setColumns(20);
         jTextArea1.setForeground(new java.awt.Color(204, 51, 0));
         jTextArea1.setRows(5);
-        jTextArea1.setText("Please read the following:\nFor Insert, only enter Name and Password.\nFor Delete, only enter ID.");
+        jTextArea1.setText("Please read the following:\nFor Insert, enter only Name and Password.\nFor Delete, enter only ID.\nFor Reset Password, enter only ID and a new \npassword.");
         jScrollPane2.setViewportView(jTextArea1);
+
+        jLabel1.setBackground(new java.awt.Color(204, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel1.setText("Employees");
+
+        jButtonModifyPW.setBackground(new java.awt.Color(204, 255, 204));
+        jButtonModifyPW.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jButtonModifyPW.setText("Reset Password");
+        jButtonModifyPW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonModifyPWActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -203,21 +231,34 @@ public class EmpInsertDelete extends javax.swing.JFrame {
                                     .addComponent(TxtFdPswd)
                                     .addComponent(TxtFdID))
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18))
+                            .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(27, 27, 27)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(107, 107, 107)
+                                .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(344, 344, 344)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(48, 48, 48)
+                .addGap(14, 14, 14)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(LabelName, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -235,8 +276,10 @@ public class EmpInsertDelete extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(26, 26, 26)
+                        .addComponent(jButtonModifyPW, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         pack();
@@ -246,8 +289,10 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         // Display Selected Row in JTextFields
         int i = jTableDisplayEmployees.getSelectedRow();
         TableModel model = jTableDisplayEmployees.getModel();
-        TxtFdName.setText(model.getValueAt(i, 0).toString());
-        TxtFdPswd.setText(model.getValueAt(i, 1).toString());
+        TxtFdID.setText(model.getValueAt(i, 0).toString());
+        TxtFdName.setText(model.getValueAt(i, 1).toString());
+        TxtFdPswd.setText(model.getValueAt(i, 2).toString());
+
     }//GEN-LAST:event_jTableDisplayEmployeesMouseClicked
 
     // Password is hashed using MD5
@@ -262,6 +307,17 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         String query = "DELETE FROM `employees` WHERE `id` = " + TxtFdID.getText() + ";";
         executeSQLQuery(query, "Deleted");
     }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    private void jButtonModifyPWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyPWActionPerformed
+        // TODO add your handling code here:
+        String query = "UPDATE `employees` SET `pswd` = MD5(" + TxtFdPswd.getText() + ") WHERE `id` = " +
+                "'" + TxtFdID.getText() + "';";
+        executeSQLQuery(query, "Password Reset");
+    }//GEN-LAST:event_jButtonModifyPWActionPerformed
+
+    private void TxtFdIDMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TxtFdIDMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtFdIDMouseClicked
 
     /**
      * @param args the command line arguments
@@ -307,6 +363,8 @@ public class EmpInsertDelete extends javax.swing.JFrame {
     private javax.swing.JTextField TxtFdPswd;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonInsert;
+    private javax.swing.JButton jButtonModifyPW;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTableDisplayEmployees;

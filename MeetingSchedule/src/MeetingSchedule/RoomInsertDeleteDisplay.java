@@ -29,6 +29,7 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
      */
     public RoomInsertDeleteDisplay() {
         initComponents();
+        myInitComponents();
         // Displays all the existing rooms in database
         Show_Room_In_JTable();        
     }
@@ -98,18 +99,21 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                 Show_Room_In_JTable();
                 
                 // Display the message
-                JOptionPane.showMessageDialog(null, "Data " + message + " Successfully");
+                JOptionPane.showMessageDialog(null, message + " Successfully");
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "Data " + message + " not Not Successfully");   
+                JOptionPane.showMessageDialog(null, message + " not Not Successfully");   
             }
         }catch(Exception ex) {
             ex.printStackTrace();
         }
     }
         
-    
+    // This method prvents from terminating an application when this JFrame is closed
+    private void myInitComponents() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -127,6 +131,8 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
         jTableDisplayRooms = new javax.swing.JTable();
         jButtonInsert = new javax.swing.JButton();
         jButtonDelete = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jButtonModify = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 204, 204));
@@ -171,37 +177,62 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setBackground(new java.awt.Color(204, 255, 255));
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel1.setText("Rooms");
+
+        jButtonModify.setBackground(new java.awt.Color(204, 255, 204));
+        jButtonModify.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jButtonModify.setText("Modify Size");
+        jButtonModify.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonModifyActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(123, 123, 123))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(LabelRooNumber)
-                            .addComponent(LabelRoomSize))
-                        .addGap(32, 32, 32)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(123, 123, 123))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(42, 42, 42)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(LabelRooNumber)
+                                    .addComponent(LabelRoomSize))
+                                .addGap(32, 32, 32)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(TxtFdRoomNum, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
+                                    .addComponent(TxtFdRoomSize))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(TxtFdRoomNum, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                            .addComponent(TxtFdRoomSize))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jButtonDelete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                        .addGap(113, 113, 113)
+                        .addComponent(jButtonModify, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(348, 348, 348)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(48, 48, 48)
+                .addGap(15, 15, 15)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -215,8 +246,10 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                         .addGap(90, 90, 90)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButtonInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(86, Short.MAX_VALUE))
+                            .addComponent(jButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(39, 39, 39)
+                        .addComponent(jButtonModify, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(91, Short.MAX_VALUE))
         );
 
         pack();
@@ -243,6 +276,13 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
                 " AND `size` = " + TxtFdRoomSize.getText() + ";";
         executeSQLQuery(query, "Deleted");
     }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    private void jButtonModifyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonModifyActionPerformed
+        // TODO add your handling code here:
+        String query = "UPDATE `rooms` SET `size` = " + TxtFdRoomSize.getText() + " WHERE `id` = "
+                + TxtFdRoomNum.getText() + ";";
+        executeSQLQuery(query, "Room Size Rest");
+    }//GEN-LAST:event_jButtonModifyActionPerformed
 
     /*    */
     
@@ -288,6 +328,8 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
     private javax.swing.JTextField TxtFdRoomSize;
     private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonInsert;
+    private javax.swing.JButton jButtonModify;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableDisplayRooms;
     // End of variables declaration//GEN-END:variables

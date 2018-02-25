@@ -16,8 +16,13 @@ public class CreateMeeting extends javax.swing.JFrame {
      */
     public CreateMeeting() {
         initComponents();
+        myInitComponents();
     }
 
+    // This method prvents from terminating an application when this JFrame is closed
+    private void myInitComponents() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

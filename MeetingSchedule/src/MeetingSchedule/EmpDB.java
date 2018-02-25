@@ -10,12 +10,18 @@ package MeetingSchedule;
  * @author maxkim
  */
 public class EmpDB {
+    private int id;
     private String name;
     private String pswd;
     
-    public EmpDB( String name, String pswd) {
+    public EmpDB( int id, String name, String pswd) {
+        this.id = id;
         this.name = name;
         this.pswd = pswd;
+    }
+    
+    public int getID() {
+        return id;
     }
     
     public String getName() {

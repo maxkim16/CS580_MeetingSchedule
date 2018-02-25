@@ -23,52 +23,29 @@ import javax.swing.table.TableModel;
  * @author maxkim
  */
 public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
-
-    private static final String DBHOST = "localhost";
-    private static final String DBNAME = "CS580_Schedule";
-    private static final String DBUSER = "root";
-    private static final String DBPASSWORD = "maxkim";
-    private static final String CONN_STRING
-            = "jdbc:mysql://" + DBHOST + "/" + DBNAME + "?user=" + DBUSER
-            + "&password=" + DBPASSWORD + "&useSSL=false";
+    
     /**
      * Creates new form RoomInsertDeleteDisplay
      */
     public RoomInsertDeleteDisplay() {
         initComponents();
-        Show_Room_In_JTable();
+        // Displays all the existing rooms in database
+        Show_Room_In_JTable();        
     }
 
-    // connect to database
-    public Connection getConnection() {
-
-        Connection con = null;
-        try {
-            //Load the MySQL Connector / J classes
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            //Set connect string to local MySQL database, user is JohnCena
-            String connString = "jdbc:mysql://" + DBHOST + "/" + DBNAME
-                    + "?user=" + DBUSER + "&" + "password=" + DBPASSWORD + "&useSSL=false";
-            con = DriverManager.getConnection(connString);
-            System.out.println("Database successfully connected");
-           
-            return con;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
     // Before displaying rooms in JTable, first store each room as an object
     // make them a list
     public ArrayList<RoomDB> getRoomList()
     {
+ 
+        DBconnector db = new DBconnector();
         // each roomDB object has its number and size
         ArrayList<RoomDB> roomList = new ArrayList<RoomDB>();
-        Connection connection = getConnection();
+        // connect to database 
+        Connection connection = db.connectToDB();
         String query = "SELECT * FROM `rooms`";
         Statement st;
-        ResultSet rs;
+        ResultSet rs = db.getQueryResult(query);
         
         try {
             st = connection.createStatement();
@@ -91,6 +68,7 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
     // Display Data in JTable
     public void Show_Room_In_JTable()
     {
+        // connect to database and get all the existing rooms
         ArrayList<RoomDB> list = getRoomList();
         DefaultTableModel model = (DefaultTableModel)jTableDisplayRooms.getModel();
         // each row has room's attributes: size and number 
@@ -106,7 +84,8 @@ public class RoomInsertDeleteDisplay extends javax.swing.JFrame {
     // Execute The SQL Query
     public void executeSQLQuery(String query, String message)
     {
-        Connection con = getConnection();
+        DBconnector db = new DBconnector();
+        Connection con = db.connectToDB();
         Statement st;
         try{
             st = con.createStatement();

@@ -126,6 +126,7 @@ public class AddRoom extends javax.swing.JFrame {
 
     // Add a new room
     private void jButtonSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSubmitActionPerformed
+        
         // connect to database 
         DBconnector db = new DBconnector();
         // get the user input (room number, size) from the text fields and add a new room

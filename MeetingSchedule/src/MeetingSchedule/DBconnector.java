@@ -22,39 +22,50 @@ public class DBconnector {
             + "&password=" + DBPASSWORD + "&useSSL=false";
 
     public static void main(String[] args) {
-        /*
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(CONN_STRING, DBUSER, DBPASSWORD);
-            System.out.println("Database successfully connected");
-        }catch (SQLException e) {
-            System.err.println(e);
-        }
-         */
-        //sqlDisplayer("select * from rooms;");
-    }
-
-    public static void connectToDB() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(CONN_STRING, DBUSER, DBPASSWORD);
-            System.out.println("Database successfully connected");
-        }catch (SQLException e) {
-            System.err.println(e);
-        }
+        
+        
     }
     
-    public static void sqlHandler(String sqlVar) {
+    public Connection connectToDB() {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(CONN_STRING, DBUSER, DBPASSWORD);
+            System.out.println("Database successfully connected");
+        }catch (SQLException e) {
+            System.err.println(e);
+        }
+        return conn;
+    }
+    
+    public ResultSet getQueryResult(String query) {
+        ResultSet rs = null;
         try {
             //Load the MySQL Connector / J classes
             Class.forName("com.mysql.jdbc.Driver").newInstance();
 
-            //Set connect string to local MySQL database, user is JohnCena
-            String connString = "jdbc:mysql://" + DBHOST + "/" + DBNAME
-                    + "?user=" + DBUSER + "&" + "password=" + DBPASSWORD + "&useSSL=false";
+            // Connect to database
+            Connection conn = connectToDB();
 
-            Connection conn = DriverManager.getConnection(connString);
-            System.out.println("Database successfully connected");
+            // Get result set
+            Statement stmt = conn.createStatement();
+            String select = query;
+            rs = stmt.executeQuery(select);
+            return rs;
+        }catch (Exception e){
+            e.printStackTrace(); 
+        }
+        return rs;
+    }
+    
+    // handles SQL queries, such as insert and delete
+    public void sqlHandler(String sqlVar) {
+        try {
+            
+            //Load the MySQL Connector / J classes
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            
+            // Connect to database
+            Connection conn = connectToDB();
 
             //Get result set
             Statement stmt = conn.createStatement();
@@ -70,17 +81,14 @@ public class DBconnector {
 
     // Example of JDBC Using MySQL
     // Taken from Kroenke's Book
-    public static void sqlDisplayer(String MySQLquery) {
+    // Used for SQL Query 'select' 
+    public void sqlDisplayer(String MySQLquery) {
         try {
             //Load the MySQL Connector / J classes
             Class.forName("com.mysql.jdbc.Driver").newInstance();
 
-            //Set connect string to local MySQL database, user is JohnCena
-            String connString = "jdbc:mysql://" + DBHOST + "/" + DBNAME
-                    + "?user=" + DBUSER + "&" + "password=" + DBPASSWORD + "&useSSL=false";
-
-            Connection conn = DriverManager.getConnection(connString);
-            System.out.println("Database successfully connected");
+            // Connect to database
+            Connection conn = connectToDB();
 
             // Get result set
             Statement stmt = conn.createStatement();

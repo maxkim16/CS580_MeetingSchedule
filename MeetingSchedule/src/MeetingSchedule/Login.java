@@ -27,10 +27,7 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     public Login() {
-        
         initComponents();
-        // prevents from terminating the application when a jFrame is closed
-        // myInitComponents();
     }
 
     // Check if the right id and password are entered for employee accounts
@@ -75,6 +72,12 @@ public class Login extends javax.swing.JFrame {
         else {
             return false;
         }
+    }
+    
+    public String getUsername() {
+        String user = jTextName.getText();
+        String pw = jTextPswd.getText();
+        return user;
     }
     
     // This method prvents from terminating an application when this JFrame is closed
@@ -207,8 +210,15 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextPswdActionPerformed
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        // TODO add your handling code here:
+        // Veryfiy the user account in database
         verifyEmp();
+        
+        // Pass username and password to EmpMain Frame
+        String username = jTextName.getText();
+        String pswd = jTextPswd.getText();
+        EmpMain emp = new EmpMain(username, pswd);
+        emp.setVisible(true);
+        
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonAdmLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAdmLoginActionPerformed

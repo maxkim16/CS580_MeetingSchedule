@@ -14,6 +14,7 @@ public class EmpDB {
     private String username;
     private String pswd;
     
+    
     public EmpDB( String name, String username, String pswd) {
         this.name = name;
         this.username = username;

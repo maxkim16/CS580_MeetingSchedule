@@ -193,6 +193,11 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         LabelUsername.setText("Username:");
 
         TxtFdUsername.setFont(new java.awt.Font("Verdana", 0, 14)); // NOI18N
+        TxtFdUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TxtFdUsernameActionPerformed(evt);
+            }
+        });
 
         jLabel2.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 0, 0));
@@ -303,6 +308,10 @@ public class EmpInsertDelete extends javax.swing.JFrame {
                 "'" + TxtFdUsername.getText() + "';";
         executeSQLQuery(query, "Password Reset");
     }//GEN-LAST:event_jButtonModifyPWActionPerformed
+
+    private void TxtFdUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtFdUsernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TxtFdUsernameActionPerformed
 
     /**
      * @param args the command line arguments

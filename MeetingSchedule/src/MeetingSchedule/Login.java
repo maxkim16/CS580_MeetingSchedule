@@ -50,15 +50,17 @@ public class Login extends javax.swing.JFrame {
             rs = st.executeQuery(sql);
             if (rs.next()) {
                 JOptionPane.showMessageDialog(this, "valid user");
+                return true;
             } else {
                 JOptionPane.showMessageDialog(this, "invalid user.Please try again");
+                return false;
             }
         }
         
         } catch (SQLException err) {
          JOptionPane.showMessageDialog(this, err.getMessage());
         }
-        return null;
+        return false;
     }
     
     // Check to see if the right id and password are entered for the admin account
@@ -210,14 +212,15 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextPswdActionPerformed
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        // Veryfiy the user account in database
-        verifyEmp();
         
-        // Pass username and password to EmpMain Frame
-        String username = jTextName.getText();
-        String pswd = jTextPswd.getText();
-        EmpMain emp = new EmpMain(username, pswd);
-        emp.setVisible(true);
+        // Veryfiy the user account in database
+        if(verifyEmp()) {
+            String username = jTextName.getText();
+            String pswd = jTextPswd.getText();
+            // Pass username and password to EmpMain Frame
+            EmpMain emp = new EmpMain(username, pswd);
+            emp.setVisible(true);
+        }
         
     }//GEN-LAST:event_jButtonLoginActionPerformed
 

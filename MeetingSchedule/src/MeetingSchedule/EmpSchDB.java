@@ -13,6 +13,10 @@ package MeetingSchedule;
 /*
     Each EmpSchDB object represents each row retrieved from `empSchedule` table in database.
 */
+
+
+// This class is not used at all. It's only used for EmpCalendarNote's function Show_EmpSch_In_JTable(),
+// which is commented out. Show_EmpSch_In_JTable2(), which is used, does not require this class
 public class EmpSchDB {
 
     private String ID;

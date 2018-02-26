@@ -21,8 +21,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class EmpCalendarNote extends javax.swing.JFrame {
 
-    private String username;
-    
+    private String username; //username received from the EmpMain jFrame
+    private DefaultTableModel model; // used for the table to display schedule info
     /**
      * Creates new form EmpCalendarNote
      */
@@ -35,23 +35,71 @@ public class EmpCalendarNote extends javax.swing.JFrame {
     public EmpCalendarNote(String username) {
         this.username = username;
         initComponents();
-        // initilize the date to the current date
+        
+        // initilize the date to the current date so the table will display the schedule
+        // of employee's today's schedule 
         Date dateToday = new Date();
         jDateChooser1.setDate(dateToday);
-        Show_EmpSch_In_JTable(username);
+        Show_EmpSch_In_JTable2(username);
         
     }
     
     // This method returns a date which is selected from the user in the calendar
     public String getDateFromCal() {
-        
+
         // Change the date format so it's easier to query date in database
         SimpleDateFormat dFormat = new SimpleDateFormat("yyyy-MM-dd");
         // get date from the calendar
+        // if no date is selected, the current date will be selected
         String date = dFormat.format(jDateChooser1.getDate());
         return date;
     }
-    
+
+    // Display Data in JTable.
+    // Unlike Show_EmpSch_In_JTable(), this method directly accesses the database
+    // and display the retrieved rows in the table instead of making a list of objects
+    // that represent the rows retrieved.
+    public void Show_EmpSch_In_JTable2(String username) {
+
+        //DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
+        model = (DefaultTableModel) jTableEmpSch.getModel();
+
+        String dateSelected = getDateFromCal();
+
+        DBconnector db = new DBconnector();
+
+        // connect to database 
+        Connection connection = db.connectToDB();
+        // Retrieve rows that is associated with the user and the date selected from the calendar
+        String query = "SELECT * FROM `empSchedule` WHERE `username` = '" + username + "' AND `date` = "
+                + "'" + dateSelected + "';";
+        Statement st;
+        ResultSet rs;
+
+        int i = 0;
+        Object[] row = new Object[6];
+        try {
+            st = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = st.executeQuery(query);
+
+            // Loops until the last row from the rows retrrieved is reached
+            while (rs.next()) {
+                // retrives the value of the designated column in the current row of this Result Set Object
+                row[0] = rs.getString("id");
+                row[1] = rs.getString("date");
+                row[2] = rs.getString("startTime");
+                row[3] = rs.getString("endTime");
+                row[4] = rs.getString("task");
+                row[5] = rs.getString("visibility");
+                model.addRow(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
     // Before displaying employees' schedule in JTable, first store each schedule as an object
     // and make them a list
     public ArrayList<EmpSchDB> getEmpSchList(String username) {
@@ -106,6 +154,8 @@ public class EmpCalendarNote extends javax.swing.JFrame {
             model.addRow(row);
         }
     }
+    */
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -142,10 +192,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
 
         jTableEmpSch.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+
             },
             new String [] {
                 "ID", "date", "startTime", "endTime", "task", "visibility"
@@ -375,9 +422,13 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         //Show_EmpSch_In_JTable(username);
     }//GEN-LAST:event_jDateChooser1InputMethodTextChanged
 
+    // Every time the user selects a new date, this method will refresh the table
+    // and display the schedule of the date the user selected
     private void jButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshActionPerformed
+        // Refresh the table by deleting all the previous rows
+        model.setRowCount(0);
         // Refresh the schedule everytime user selects a new date
-        Show_EmpSch_In_JTable(username);
+        Show_EmpSch_In_JTable2(username);
     }//GEN-LAST:event_jButtonRefreshActionPerformed
 
     /**

@@ -63,16 +63,14 @@ public class EmpInsertDelete extends javax.swing.JFrame {
         return empList;
     }   
     
-        // Display Data in JTable
-    public void Show_Emp_In_JTable()
-    {
+    // Display Data in JTable
+    public void Show_Emp_In_JTable() {
         // connect to database and get all the existing rooms
         ArrayList<EmpDB> list = getEmpList();
-        DefaultTableModel model = (DefaultTableModel)jTableDisplayEmployees.getModel();
+        DefaultTableModel model = (DefaultTableModel) jTableDisplayEmployees.getModel();
         // each row has room's attributes: size and number 
         Object[] row = new Object[3];
-        for (int i = 0; i < list.size(); i++) 
-        {
+        for (int i = 0; i < list.size(); i++) {
             row[0] = list.get(i).getName();
             row[1] = list.get(i).getUsername();
             row[2] = list.get(i).getPassword();

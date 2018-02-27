@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -23,6 +24,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
 
     private String username; //username received from the EmpMain jFrame
     private DefaultTableModel model; // used for the table to display schedule info
+    
     /**
      * Creates new form EmpCalendarNote
      */
@@ -40,7 +42,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         // of employee's today's schedule 
         Date dateToday = new Date();
         jDateChooser1.setDate(dateToday);
-        Show_EmpSch_In_JTable2(username);
+        Show_EmpSch_In_JTable2();
         
     }
     
@@ -59,7 +61,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
     // Unlike Show_EmpSch_In_JTable(), this method directly accesses the database
     // and display the retrieved rows in the table instead of making a list of objects
     // that represent the rows retrieved.
-    public void Show_EmpSch_In_JTable2(String username) {
+    public void Show_EmpSch_In_JTable2() {
 
         //DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
         model = (DefaultTableModel) jTableEmpSch.getModel();
@@ -99,62 +101,32 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         }
     }
 
-    /*
-    // Before displaying employees' schedule in JTable, first store each schedule as an object
-    // and make them a list
-    public ArrayList<EmpSchDB> getEmpSchList(String username) {
-
-        String dateSelected =  getDateFromCal();
-
+    // Execute The SQL Query and refresh the table
+    public void executeSQLQuery(String query, String message)
+    {
         DBconnector db = new DBconnector();
-        // each empSchDB 
-        ArrayList<EmpSchDB> empSchList = new ArrayList<EmpSchDB>();
-        // connect to database 
-        Connection connection = db.connectToDB();
-        // Retrieve rows that is associated with the user and the date selected from the calendar
-        String query = "SELECT * FROM `empSchedule` WHERE `username` = '" + username + "' AND `date` = "
-                + "'" + dateSelected + "';";
+        Connection con = db.connectToDB();
         Statement st;
-        ResultSet rs;
-
-        try {
-            st = connection.createStatement();
-            // get the SQL query result
-            rs = st.executeQuery(query);
-            EmpSchDB empSchDB;
-            // Loops until the last row from the rows retrrieved is reached
-            while (rs.next()) {
-                // store SQL result's first and second column 
-                empSchDB = new EmpSchDB(rs.getString("id"), rs.getString("username"), rs.getString("date"),
-                        rs.getString("startTime"), rs.getString("endTime"), rs.getString("task"), rs.getString("visibility"));
-                // add each schedule to the list
-                empSchList.add(empSchDB);
+        try{
+            st = con.createStatement();
+            // execute the query
+            if((st.executeUpdate(query)) == 1)
+            {
+                // refresh jtable data so the new data created is displayed as well
+                model.setRowCount(0);
+                Show_EmpSch_In_JTable2();
+                
+                // Display the message
+                JOptionPane.showMessageDialog(null, message);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return empSchList;
-    }
-    
-    // Display Data in JTable
-    public void Show_EmpSch_In_JTable(String username) {
-        // connect to database and get all the existing employee schedules
-        ArrayList<EmpSchDB> list = getEmpSchList(username);
-        DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
-        // each row represents employee's schedule
-        Object[] row = new Object[6];
-        for (int i = 0; i < list.size(); i++) {
-            row[0] = list.get(i).getID();
-            row[1] = list.get(i).getDate();
-            row[2] = list.get(i).getStartTime();
-            row[3] = list.get(i).getEndTime();
-            row[4] = list.get(i).getTask();
-            row[5] = list.get(i).getVisibility();
-            model.addRow(row);
+            else
+            {
+                JOptionPane.showMessageDialog(null, message + " failed.");   
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
         }
     }
-    */
     
     
     /**
@@ -170,21 +142,21 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableEmpSch = new javax.swing.JTable();
         jPanelAddDeleteEdit = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLabelID = new javax.swing.JLabel();
+        jLabelDate = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
-        jTextField6 = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jLabelTask = new javax.swing.JLabel();
+        jLabelVisibility = new javax.swing.JLabel();
+        jTextFieldID = new javax.swing.JTextField();
+        jTextFieldDate = new javax.swing.JTextField();
+        jTextFieldStart = new javax.swing.JTextField();
+        jTextFieldEnd = new javax.swing.JTextField();
+        jTextFieldTask = new javax.swing.JTextField();
+        jTextFieldVisibility = new javax.swing.JTextField();
+        jButtonInsert = new javax.swing.JButton();
+        jButtonDelete = new javax.swing.JButton();
+        jButtonEdit = new javax.swing.JButton();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jButtonRefresh = new javax.swing.JButton();
 
@@ -198,50 +170,67 @@ public class EmpCalendarNote extends javax.swing.JFrame {
                 "ID", "date", "startTime", "endTime", "task", "visibility"
             }
         ));
+        jTableEmpSch.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableEmpSchMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableEmpSch);
 
-        jLabel1.setText("jLabel1");
+        jLabelID.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelID.setText("ID:");
 
-        jLabel2.setText("jLabel1");
+        jLabelDate.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelDate.setText("Date:");
 
-        jLabel3.setText("jLabel1");
+        jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel3.setText("StartDate:");
 
-        jLabel4.setText("jLabel1");
+        jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabel4.setText("EndDate:");
 
-        jLabel5.setText("jLabel1");
+        jLabelTask.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelTask.setText("Task:");
 
-        jLabel6.setText("jLabel1");
+        jLabelVisibility.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelVisibility.setText("Visibility");
 
-        jTextField2.setText("jTextField1");
-
-        jTextField3.setText("jTextField1");
-
-        jTextField4.setText("jTextField1");
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                jTextFieldStartActionPerformed(evt);
             }
         });
 
-        jTextField5.setText("jTextField1");
-
-        jTextField6.setText("jTextField1");
-
-        jTextField7.setText("jTextField1");
-
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jTextFieldEnd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jTextFieldEndActionPerformed(evt);
             }
         });
 
-        jButton2.setText("jButton1");
-
-        jButton3.setText("jButton1");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jButtonInsert.setBackground(new java.awt.Color(204, 255, 204));
+        jButtonInsert.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonInsert.setText("Insert");
+        jButtonInsert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jButtonInsertActionPerformed(evt);
+            }
+        });
+
+        jButtonDelete.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonDelete.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonDelete.setText("Delete");
+        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteActionPerformed(evt);
+            }
+        });
+
+        jButtonEdit.setBackground(new java.awt.Color(255, 204, 153));
+        jButtonEdit.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonEdit.setText("Edit");
+        jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEditActionPerformed(evt);
             }
         });
 
@@ -254,84 +243,78 @@ public class EmpCalendarNote extends javax.swing.JFrame {
                 .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
                         .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabelID)
+                            .addComponent(jLabelDate))
+                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jLabel2))
-                                        .addGap(18, 18, 18)
-                                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton1)
-                                    .addComponent(jButton3)))
-                            .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                        .addComponent(jLabel5)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton2)))
-                        .addContainerGap(40, Short.MAX_VALUE))
+                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAddDeleteEditLayout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jTextFieldStart, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabelTask)
+                            .addComponent(jLabelVisibility))
+                        .addGap(24, 24, 24)
+                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAddDeleteEditLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButtonInsert)
+                                .addGap(9, 9, 9))
+                            .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
+                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(jTextFieldVisibility, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+                                    .addComponent(jTextFieldTask, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonEdit)
+                                    .addComponent(jButtonDelete)))
+                            .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
+                                .addComponent(jTextFieldEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         jPanelAddDeleteEditLayout.setVerticalGroup(
             jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelAddDeleteEditLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1)
-                        .addGap(24, 24, 24)))
+                .addGap(14, 14, 14)
+                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelID)
+                    .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelDate)
+                    .addComponent(jTextFieldDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonInsert))
+                .addGap(18, 18, 18)
                 .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton3)))
+                        .addComponent(jTextFieldStart, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButtonEdit)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jTextFieldEnd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabelTask)
+                            .addComponent(jTextFieldTask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanelAddDeleteEditLayout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jButton2)))
+                        .addGap(4, 4, 4)
+                        .addComponent(jButtonDelete)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanelAddDeleteEditLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(33, Short.MAX_VALUE))
+                    .addComponent(jTextFieldVisibility, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelVisibility))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
 
         jDateChooser1.addInputMethodListener(new java.awt.event.InputMethodListener() {
@@ -342,6 +325,8 @@ public class EmpCalendarNote extends javax.swing.JFrame {
             }
         });
 
+        jButtonRefresh.setBackground(new java.awt.Color(204, 255, 255));
+        jButtonRefresh.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonRefresh.setText("Refresh Schedule");
         jButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -358,34 +343,30 @@ public class EmpCalendarNote extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addComponent(jPanelAddDeleteEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(24, 24, 24)
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(111, 111, 111)
-                        .addComponent(jButtonRefresh)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 618, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(111, 111, 111)
+                                .addComponent(jButtonRefresh)))
+                        .addGap(0, 77, Short.MAX_VALUE))
+                    .addComponent(jPanelAddDeleteEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 742, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 473, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 91, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButtonRefresh)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanelAddDeleteEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
+                        .addComponent(jPanelAddDeleteEdit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1)))
                 .addContainerGap())
         );
 
@@ -393,29 +374,57 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(25, 25, 25))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(19, 19, 19))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+    // This method edits a schedule
+    private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
+        String id = jTextFieldID.getText();
+        String date = jTextFieldDate.getText();
+        String startTime = jTextFieldStart.getText();
+        String endTime = jTextFieldEnd.getText();
+        String task = jTextFieldTask.getText();
+        String visibility = jTextFieldVisibility.getText();
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        String query = "UPDATE `empSchedule` SET `date` = '" + date + "', `startTime` = '" + startTime + "', "
+                + "`endTime` = '" + endTime + "', `task` = '" + task + "', `visibility` = "
+                + "'" + visibility + "' WHERE `id` = " + id + ";";
+        executeSQLQuery(query, "Edited");
+        Show_EmpSch_In_JTable2(); // refreshed table will be shown
+    }//GEN-LAST:event_jButtonEditActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    // This method inserts a new schedule 
+    private void jButtonInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertActionPerformed
+        String date = jTextFieldDate.getText();
+        String startTime = jTextFieldStart.getText();
+        String endTime = jTextFieldEnd.getText();
+        String task = jTextFieldTask.getText();
+        String visibility = jTextFieldVisibility.getText();
+
+        String query = "INSERT INTO `empSchedule`(`username`, `date`, `startTime`, `endTime`"
+                + ", `task`, `visibility`) VALUES ( '" + username + "', '" + date + "', '"
+                + startTime + "', '" + endTime + "', '" + task + "', '" + visibility + "');";
+        executeSQLQuery(query, "Inserted");
+        Show_EmpSch_In_JTable2(); // refreshed table will be shown
+
+    }//GEN-LAST:event_jButtonInsertActionPerformed
+
+    private void jTextFieldStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldStartActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_jTextFieldStartActionPerformed
 
     // This method is not used
     private void jDateChooser1InputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jDateChooser1InputMethodTextChanged
@@ -425,11 +434,39 @@ public class EmpCalendarNote extends javax.swing.JFrame {
     // Every time the user selects a new date, this method will refresh the table
     // and display the schedule of the date the user selected
     private void jButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRefreshActionPerformed
-        // Refresh the table by deleting all the previous rows
-        model.setRowCount(0);
+      
         // Refresh the schedule everytime user selects a new date
-        Show_EmpSch_In_JTable2(username);
+        model.setRowCount(0);
+        Show_EmpSch_In_JTable2();
     }//GEN-LAST:event_jButtonRefreshActionPerformed
+
+    private void jTextFieldEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldEndActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldEndActionPerformed
+
+    // This method deletes a schedule
+    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
+        String id = jTextFieldID.getText();
+
+        String query = "DELETE FROM `empSchedule` WHERE `id` = " + id + ";";
+        executeSQLQuery(query, "Deleted");
+        Show_EmpSch_In_JTable2(); // refreshed table will be shown
+
+    }//GEN-LAST:event_jButtonDeleteActionPerformed
+
+    // fill in the text fields when a row in the table is clicked
+    private void jTableEmpSchMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableEmpSchMouseClicked
+            // Display Selected Row in JTextFields
+        int i = jTableEmpSch.getSelectedRow();
+        model = (DefaultTableModel) jTableEmpSch.getModel();
+        // TxtFdID.setText(model.getValueAt(i, 0).toString());
+        jTextFieldID.setText(model.getValueAt(i, 0).toString());
+        jTextFieldDate.setText(model.getValueAt(i, 1).toString());
+        jTextFieldStart.setText(model.getValueAt(i, 2).toString());
+        jTextFieldEnd.setText(model.getValueAt(i, 3).toString());
+        jTextFieldTask.setText(model.getValueAt(i, 4).toString());
+        jTextFieldVisibility.setText(model.getValueAt(i, 5).toString());
+    }//GEN-LAST:event_jTableEmpSchMouseClicked
 
     /**
      * @param args the command line arguments
@@ -467,26 +504,26 @@ public class EmpCalendarNote extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButtonDelete;
+    private javax.swing.JButton jButtonEdit;
+    private javax.swing.JButton jButtonInsert;
     private javax.swing.JButton jButtonRefresh;
     private com.toedter.calendar.JDateChooser jDateChooser1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabelDate;
+    private javax.swing.JLabel jLabelID;
+    private javax.swing.JLabel jLabelTask;
+    private javax.swing.JLabel jLabelVisibility;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanelAddDeleteEdit;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableEmpSch;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
+    private javax.swing.JTextField jTextFieldDate;
+    private javax.swing.JTextField jTextFieldEnd;
+    private javax.swing.JTextField jTextFieldID;
+    private javax.swing.JTextField jTextFieldStart;
+    private javax.swing.JTextField jTextFieldTask;
+    private javax.swing.JTextField jTextFieldVisibility;
     // End of variables declaration//GEN-END:variables
 }

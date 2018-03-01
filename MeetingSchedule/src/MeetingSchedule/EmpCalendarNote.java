@@ -37,7 +37,9 @@ public class EmpCalendarNote extends javax.swing.JFrame {
     public EmpCalendarNote(String username) {
         this.username = username;
         initComponents();
-        
+        // prevent from terminating the application when a jFrame is closed
+        myInitComponents(); 
+
         // initilize the date to the current date so the table will display the schedule
         // of employee's today's schedule 
         Date dateToday = new Date();
@@ -65,7 +67,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
 
         //DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
         model = (DefaultTableModel) jTableEmpSch.getModel();
-
+        
         String dateSelected = getDateFromCal();
 
         DBconnector db = new DBconnector();
@@ -128,6 +130,11 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         }
     }
     
+    // This method prvents from terminating an application when a JFrame is closed
+    private void myInitComponents() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -184,10 +191,10 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         jLabelDate.setText("Date:");
 
         jLabel3.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabel3.setText("StartDate:");
+        jLabel3.setText("StartTime:");
 
         jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabel4.setText("EndDate:");
+        jLabel4.setText("EndTime:");
 
         jLabelTask.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabelTask.setText("Task:");
@@ -348,7 +355,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(111, 111, 111)
                                 .addComponent(jButtonRefresh)))
-                        .addGap(0, 77, Short.MAX_VALUE))
+                        .addGap(0, 78, Short.MAX_VALUE))
                     .addComponent(jPanelAddDeleteEdit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 742, javax.swing.GroupLayout.PREFERRED_SIZE))

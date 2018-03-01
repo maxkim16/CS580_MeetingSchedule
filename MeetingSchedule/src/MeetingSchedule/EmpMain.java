@@ -53,19 +53,39 @@ public class EmpMain extends javax.swing.JFrame {
         jLabelUserName = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButtonCalendar = new javax.swing.JButton();
+        jButtonCalendar1 = new javax.swing.JButton();
+        jButtonCalendar2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabelUserName.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jLabelUserName.setBackground(new java.awt.Color(204, 255, 204));
+        jLabelUserName.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabelUserName.setText("name");
 
-        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel1.setText("Hi,");
 
-        jButtonCalendar.setText("Calendar");
+        jButtonCalendar.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonCalendar.setText("Calendar/Note");
         jButtonCalendar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCalendarActionPerformed(evt);
+            }
+        });
+
+        jButtonCalendar1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonCalendar1.setText("Check Invitations");
+        jButtonCalendar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCalendar1ActionPerformed(evt);
+            }
+        });
+
+        jButtonCalendar2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonCalendar2.setText("Send Invitations");
+        jButtonCalendar2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCalendar2ActionPerformed(evt);
             }
         });
 
@@ -77,13 +97,15 @@ public class EmpMain extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonCalendar)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel1)
+                        .addGap(431, 523, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(279, 486, Short.MAX_VALUE))))
+                            .addComponent(jButtonCalendar)
+                            .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonCalendar1)
+                            .addComponent(jButtonCalendar2))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,10 +113,14 @@ public class EmpMain extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
+                .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                 .addComponent(jButtonCalendar)
-                .addContainerGap(235, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addComponent(jButtonCalendar1)
+                .addGap(35, 35, 35)
+                .addComponent(jButtonCalendar2)
+                .addGap(59, 59, 59))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -119,6 +145,16 @@ public class EmpMain extends javax.swing.JFrame {
         EmpCalendarNote empCal = new EmpCalendarNote(username);
         empCal.setVisible(true);
     }//GEN-LAST:event_jButtonCalendarActionPerformed
+
+    // Opens the EmpCheckInvitations jFrame and pass the value of username to it
+    private void jButtonCalendar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar1ActionPerformed
+        EmpCheckInvitation invi = new EmpCheckInvitation(username);
+        invi.setVisible(true);
+    }//GEN-LAST:event_jButtonCalendar1ActionPerformed
+
+    private void jButtonCalendar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonCalendar2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -158,6 +194,8 @@ public class EmpMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private datechooser.beans.DateChooserCombo dateChooserCombo1;
     private javax.swing.JButton jButtonCalendar;
+    private javax.swing.JButton jButtonCalendar1;
+    private javax.swing.JButton jButtonCalendar2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelUserName;
     private javax.swing.JPanel jPanel1;

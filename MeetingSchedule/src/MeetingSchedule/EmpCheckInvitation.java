@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -56,7 +57,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         ResultSet rs;
 
         int i = 0;
-        Object[] row = new Object[7];
+        Object[] row = new Object[8];
         try {
             st = connection.createStatement();
             // execute the given SQL statement and get the result
@@ -66,12 +67,13 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
             while (rs.next()) {
                 // retrives the value of the designated column in the current row of this Result Set Object
                 row[0] = rs.getString("id");
-                row[1] = rs.getString("topic");
-                row[2] = rs.getString("invitorName");
-                row[3] = rs.getString("date");
-                row[4] = rs.getString("startTime");
-                row[5] = rs.getString("endTime");
-                row[6] = rs.getString("acceptance");
+                row[1] = rs.getString("meetingID");
+                row[2] = rs.getString("topic");
+                row[3] = rs.getString("invitorName");
+                row[4] = rs.getString("date");
+                row[5] = rs.getString("startTime");
+                row[6] = rs.getString("endTime");
+                row[7] = rs.getString("acceptance");
                 model.addRow(row);
             }
         } catch (Exception e) {
@@ -81,15 +83,43 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
     
     // This method returns a query that will retrieve the rows (invitations the user received)
     public String getQuery() {
-          String query, topic, invitorID, invitorName, date, startTime, endTime, acceptance;
+          String query;
           // Get the user's invitations and important information associated with the invitations, such as
           // the date, time, invitor, etc.
-          query = "SELECT a.id, m.topic, e.name AS invitorName, m.date, m.startTime, m.endTime, a.acceptance "
+          query = "SELECT a.id, m.id as meetingID, m.topic, e.name AS invitorName, m.date, m.startTime, m.endTime, a.acceptance "
                   + "FROM assignments a "
                   + "INNER JOIN meetings m ON a.meetingID = m.id "
                   + "INNER JOIN employees e ON m.ownerID = e.username "
                   + "WHERE a.inviteeID = '" +  username + "';";
           return query;
+    }
+    
+    // Execute The SQL Query
+    public void executeSQLQuery(String query, String message)
+    {
+        DBconnector db = new DBconnector();
+        Connection con = db.connectToDB();
+        Statement st;
+        try{
+            st = con.createStatement();
+            // execute the query
+            if((st.executeUpdate(query)) == 1)
+            {
+                // refresh jtable data so the new data created is displayed as well
+                model = (DefaultTableModel)jTableInvitations.getModel();
+                model.setRowCount(0);
+                showInvitationsInTable();
+                
+                // Display the message
+                JOptionPane.showMessageDialog(null, "Data " + message + " Successfully");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Data " + message + " not Not Successfully");   
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
     }
     
     // This method prvents from terminating an application when a JFrame is closed
@@ -112,6 +142,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         jButtonDecline = new javax.swing.JButton();
         jButtonRefresh = new javax.swing.JButton();
         jLabelInvitation = new javax.swing.JLabel();
+        jButtonDecline1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -120,22 +151,39 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "topic", "Invitor", "date", "startTime", "endTime", "acceptance"
+                "id", "meetingID", "topic", "Invitor", "date", "startTime", "endTime", "acceptance"
             }
         ));
+        jTableInvitations.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTableInvitationsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTableInvitations);
 
+        jButtonAccept.setBackground(new java.awt.Color(204, 255, 204));
         jButtonAccept.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonAccept.setText("Accept");
+        jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAcceptActionPerformed(evt);
+            }
+        });
 
+        jButtonDecline.setBackground(new java.awt.Color(255, 153, 153));
         jButtonDecline.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonDecline.setText("Decline");
 
+        jButtonRefresh.setBackground(new java.awt.Color(255, 255, 204));
         jButtonRefresh.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonRefresh.setText("Refresh");
 
         jLabelInvitation.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabelInvitation.setText("Invitation");
+
+        jButtonDecline1.setBackground(new java.awt.Color(255, 102, 102));
+        jButtonDecline1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonDecline1.setText("Delete");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -150,7 +198,8 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(348, 348, 348)
                         .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -163,18 +212,63 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38)
                 .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(35, 35, 35)
+                .addGap(33, 33, 33)
+                .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(55, 55, 55))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    
+    private void jTableInvitationsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableInvitationsMouseClicked
+         
+
+          
+    }//GEN-LAST:event_jTableInvitationsMouseClicked
+
+    // Make an invitation a new schedule once the user accepts the invitation
+    private void jButtonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAcceptActionPerformed
+        
+        String query, username2,date, startTime, endTime, meetingID, task, visibility;
+        
+        // get the number of the row the user clicked on in the table
+        int i = jTableInvitations.getSelectedRow();
+        model = (DefaultTableModel) jTableInvitations.getModel();
+        
+        // get the date, startTime, endTime of the row the user clicked on
+        meetingID = model.getValueAt(i, 1).toString();
+        date = model.getValueAt(i, 4).toString();
+        startTime = model.getValueAt(i, 5).toString();
+        endTime = model.getValueAt(i, 6).toString();
+        
+        
+        // surround each string with single quotes for the SQL query 
+        date = "'" + date + "'";
+        startTime = "'" + startTime + "'";
+        endTime = "'" + endTime + "'";
+        username2 = "'" + username + "'";
+                
+                        JOptionPane.showMessageDialog(null, date + " " + startTime + " " + endTime + " " + username2);
+
+        // insert the meeting into the assignment table so the user can see it in his calendar
+        query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
+                + "VALUES ( " + username2 + ", " + date + ", " + startTime + ", " + endTime + ", "
+                + "(SELECT m.topic "
+                + "FROM meetings m "
+                + "WHERE m.id = " + meetingID + "), 'visible');";
+        
+        // execute the query
+        executeSQLQuery(query, "Inserted");
+        
+    }//GEN-LAST:event_jButtonAcceptActionPerformed
 
     /**
      * @param args the command line arguments
@@ -214,6 +308,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAccept;
     private javax.swing.JButton jButtonDecline;
+    private javax.swing.JButton jButtonDecline1;
     private javax.swing.JButton jButtonRefresh;
     private javax.swing.JLabel jLabelInvitation;
     private javax.swing.JScrollPane jScrollPane1;

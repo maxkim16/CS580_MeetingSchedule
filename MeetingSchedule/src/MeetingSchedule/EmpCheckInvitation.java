@@ -256,8 +256,6 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         endTime = "'" + endTime + "'";
         username2 = "'" + username + "'";
                 
-                        JOptionPane.showMessageDialog(null, date + " " + startTime + " " + endTime + " " + username2);
-
         // insert the meeting into the assignment table so the user can see it in his calendar
         query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
                 + "VALUES ( " + username2 + ", " + date + ", " + startTime + ", " + endTime + ", "
@@ -266,7 +264,16 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 + "WHERE m.id = " + meetingID + "), 'visible');";
         
         // execute the query
-        executeSQLQuery(query, "Inserted");
+        executeSQLQuery(query, "Inserted in to the calendar");
+        
+        // change assignment table's acceptance field to 'accepted
+        query = "UPDATE assignments "
+                + "SET acceptance = 'accepted' "
+                + "WHERE meetingID = " + meetingID + " "
+                + "AND inviteeID = " + username2 + ";";
+        
+        // execute the query
+        executeSQLQuery(query, "");
         
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 

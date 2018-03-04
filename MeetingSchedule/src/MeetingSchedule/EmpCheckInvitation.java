@@ -51,7 +51,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         Connection connection = db.connectToDB();
         
         // Retrieve rows rows from the `assignments` table
-        String query = getQuery();
+        String query = getInviteQuery();
 
         Statement st;
         ResultSet rs;
@@ -81,8 +81,8 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         }
     }
     
-    // This method returns a query that will retrieve the rows (invitations the user received)
-    public String getQuery() {
+    // This method returns the query that will retrieve the rows (invitations the user received)
+    public String getInviteQuery() {
           String query;
           // Get the user's invitations and important information associated with the invitations, such as
           // the date, time, invitor, etc.
@@ -92,6 +92,30 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                   + "INNER JOIN employees e ON m.ownerID = e.username "
                   + "WHERE a.inviteeID = '" +  username + "';";
           return query;
+    }
+    
+    // This method returns the query that query that will decline the invitation
+    public String getDeclineQuery(String id) {  
+        String query;
+        query = "UPDATE `assignments` "
+                + "SET `acceptance` = 'declined' "
+                + "WHERE `id` = " + id + ";";
+        return query;
+    }
+    
+    // This method returns the query that will delete the user's schedule in assignment table
+    public String getDeleteAssignmentQuery(String meetingID) {
+        String query;
+        
+        query = "DELETE es "
+                + "FROM empSchedule AS es "
+                + "JOIN meetings as m ON es.date = m.date "
+                + "AND es.startTime = m.startTime "
+                + "AND es.endTime = m.endTime "
+                + "AND es.task = m.topic "
+                + "WHERE m.id = " + meetingID + ";";
+                
+        return query;
     }
     
     // Execute The SQL Query
@@ -140,9 +164,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         jTableInvitations = new javax.swing.JTable();
         jButtonAccept = new javax.swing.JButton();
         jButtonDecline = new javax.swing.JButton();
-        jButtonRefresh = new javax.swing.JButton();
         jLabelInvitation = new javax.swing.JLabel();
-        jButtonDecline1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -173,17 +195,14 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         jButtonDecline.setBackground(new java.awt.Color(255, 153, 153));
         jButtonDecline.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonDecline.setText("Decline");
-
-        jButtonRefresh.setBackground(new java.awt.Color(255, 255, 204));
-        jButtonRefresh.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonRefresh.setText("Refresh");
+        jButtonDecline.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeclineActionPerformed(evt);
+            }
+        });
 
         jLabelInvitation.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabelInvitation.setText("Invitation");
-
-        jButtonDecline1.setBackground(new java.awt.Color(255, 102, 102));
-        jButtonDecline1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonDecline1.setText("Delete");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -197,9 +216,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                         .addGap(69, 69, 69)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(348, 348, 348)
                         .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -212,15 +229,11 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(38, 38, 38)
                 .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                .addComponent(jButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 50, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 447, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -277,6 +290,30 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 
+    /*
+    The user will decline the invitation.
+    The system will first change the `accepted` attribute to `declined` and delete the
+    assignment in the `empSchedule` relation
+     */
+    private void jButtonDeclineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeclineActionPerformed
+        String query, assignmentID, meetingID;
+        // get the number of the row the user clicked on in the table
+        int i = jTableInvitations.getSelectedRow();
+        model = (DefaultTableModel) jTableInvitations.getModel();
+        // get the id of the row the user clicked on
+        assignmentID = model.getValueAt(i, 0).toString();
+        meetingID = model.getValueAt(i,1).toString();
+        
+        query = getDeclineQuery(assignmentID);
+        // Decline the invitation
+        executeSQLQuery(query, "Invitation Declined");
+        
+        query = getDeleteAssignmentQuery(meetingID);
+        // Delete the assignment
+                        JOptionPane.showMessageDialog(null, query);   
+        executeSQLQuery(query, "Employee Schedule deleted");
+    }//GEN-LAST:event_jButtonDeclineActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -315,8 +352,6 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAccept;
     private javax.swing.JButton jButtonDecline;
-    private javax.swing.JButton jButtonDecline1;
-    private javax.swing.JButton jButtonRefresh;
     private javax.swing.JLabel jLabelInvitation;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTableInvitations;

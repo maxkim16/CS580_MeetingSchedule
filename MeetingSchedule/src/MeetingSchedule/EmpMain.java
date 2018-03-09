@@ -13,7 +13,8 @@ import javax.swing.JOptionPane;
  */
 public class EmpMain extends javax.swing.JFrame {
 
-    String username;
+    // username and passwords are received from the Login jFrame
+    String username; 
     String pswd;
 
     /**
@@ -150,10 +151,14 @@ public class EmpMain extends javax.swing.JFrame {
     private void jButtonCalendar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar1ActionPerformed
         EmpCheckInvitation invi = new EmpCheckInvitation(username);
         invi.setVisible(true);
+        
+        
     }//GEN-LAST:event_jButtonCalendar1ActionPerformed
 
+    // This method opens up the EmpSendInvitation jFrame
     private void jButtonCalendar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar2ActionPerformed
-        // TODO add your handling code here:
+        EmpSendInvitation invi = new EmpSendInvitation(username);
+        invi.setVisible(true);
     }//GEN-LAST:event_jButtonCalendar2ActionPerformed
 
     /**

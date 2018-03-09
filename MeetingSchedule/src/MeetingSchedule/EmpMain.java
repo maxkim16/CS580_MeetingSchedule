@@ -54,8 +54,9 @@ public class EmpMain extends javax.swing.JFrame {
         jLabelUserName = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jButtonCalendar = new javax.swing.JButton();
-        jButtonCalendar1 = new javax.swing.JButton();
-        jButtonCalendar2 = new javax.swing.JButton();
+        jButtonCheckInvi = new javax.swing.JButton();
+        jButtonSendMultiInvi = new javax.swing.JButton();
+        jButtonSendInvi = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -74,19 +75,27 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
-        jButtonCalendar1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonCalendar1.setText("Check Invitations");
-        jButtonCalendar1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonCheckInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonCheckInvi.setText("Check Invitations");
+        jButtonCheckInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCalendar1ActionPerformed(evt);
+                jButtonCheckInviActionPerformed(evt);
             }
         });
 
-        jButtonCalendar2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonCalendar2.setText("Send Invitations");
-        jButtonCalendar2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSendMultiInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonSendMultiInvi.setText("Send Multiple Invitations");
+        jButtonSendMultiInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCalendar2ActionPerformed(evt);
+                jButtonSendMultiInviActionPerformed(evt);
+            }
+        });
+
+        jButtonSendInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonSendInvi.setText("Send Invitation");
+        jButtonSendInvi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSendInviActionPerformed(evt);
             }
         });
 
@@ -102,10 +111,11 @@ public class EmpMain extends javax.swing.JFrame {
                         .addGap(431, 523, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonSendInvi)
                             .addComponent(jButtonCalendar)
                             .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonCalendar1)
-                            .addComponent(jButtonCalendar2))
+                            .addComponent(jButtonCheckInvi)
+                            .addComponent(jButtonSendMultiInvi))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -115,13 +125,15 @@ public class EmpMain extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jButtonCalendar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButtonCheckInvi)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonSendInvi)
                 .addGap(26, 26, 26)
-                .addComponent(jButtonCalendar1)
-                .addGap(35, 35, 35)
-                .addComponent(jButtonCalendar2)
-                .addGap(59, 59, 59))
+                .addComponent(jButtonSendMultiInvi)
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -148,18 +160,22 @@ public class EmpMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonCalendarActionPerformed
 
     // Opens the EmpCheckInvitations jFrame and pass the value of username to it
-    private void jButtonCalendar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar1ActionPerformed
+    private void jButtonCheckInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCheckInviActionPerformed
         EmpCheckInvitation invi = new EmpCheckInvitation(username);
         invi.setVisible(true);
         
         
-    }//GEN-LAST:event_jButtonCalendar1ActionPerformed
+    }//GEN-LAST:event_jButtonCheckInviActionPerformed
 
     // This method opens up the EmpSendInvitation jFrame
-    private void jButtonCalendar2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalendar2ActionPerformed
+    private void jButtonSendMultiInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendMultiInviActionPerformed
         EmpSendInvitation invi = new EmpSendInvitation(username);
         invi.setVisible(true);
-    }//GEN-LAST:event_jButtonCalendar2ActionPerformed
+    }//GEN-LAST:event_jButtonSendMultiInviActionPerformed
+
+    private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonSendInviActionPerformed
 
     /**
      * @param args the command line arguments
@@ -199,8 +215,9 @@ public class EmpMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private datechooser.beans.DateChooserCombo dateChooserCombo1;
     private javax.swing.JButton jButtonCalendar;
-    private javax.swing.JButton jButtonCalendar1;
-    private javax.swing.JButton jButtonCalendar2;
+    private javax.swing.JButton jButtonCheckInvi;
+    private javax.swing.JButton jButtonSendInvi;
+    private javax.swing.JButton jButtonSendMultiInvi;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabelUserName;
     private javax.swing.JPanel jPanel1;

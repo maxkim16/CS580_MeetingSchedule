@@ -105,8 +105,13 @@ public class EmpSendInvitation extends javax.swing.JFrame {
 
                 // Display the message
                 // JOptionPane.showMessageDialog(null, message);
+                
+                st.close();
+                con.close();
             } else {
                 //JOptionPane.showMessageDialog(null, message + " failed.");
+                st.close();
+                con.close();
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -117,7 +122,8 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         String query = "INSERT INTO groupSchedule (date, startTime, endTime) "
                 + "SELECT es.date, es.startTime, es.endTime "
                 + "FROM empSchedule AS es "
-                + "WHERE es.date = '" + date + "'";
+                + "WHERE es.date = '" + date + "' "
+                + "AND es.username = '" + name + "';";
         return query;
     }
 
@@ -149,6 +155,8 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         date = getDateFromCal();
         for (int i = 0; i < names.length; i++) {
             query = getGrpSchQuery(names[i], date);
+                           JOptionPane.showMessageDialog(null, "get group schedule" + query);
+
             executeSQLQuery(query, "schedule inserted into groupSchedule");
         }
     }
@@ -167,7 +175,66 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 + "ah.startTime <= gs.endTime));";
         return query;
     }
+    
+    // This method returns a query for selecting avaialble rooms
+    private String getAvaRoomQry(String date, String st, String et, int size) {
+        String query = " SELECT id AS roomNumber "
+                + "FROM rooms "
+                + "WHERE rooms.size >= " + size + " "
+                + "AND NOT EXISTS "
+                + "(SELECT * "
+                + "FROM meetings "
+                + "WHERE rooms.id = meetings.room "
+                + "AND meetings.date = '" + date + "' "
+                + "AND meetings.startTime = '" + st + "' "
+                + "AND meetings.endTime = '" + et + "' );";
+                        JOptionPane.showMessageDialog(null, query);
+        return query;
+    }
 
+    // This method sends the invitation to the selected invitees
+    private String getSendInviQry(String startTime, String endTime, String room, String[] names) {
+        int numOfInvitees = inviTableModel.getRowCount();
+        String query = "INSERT INTO ";
+        return query;
+    }
+    
+    private String getRoomQuery(int num) {
+        String query = "SELECT id AS roomNumber "
+                + "FROM rooms "
+                + "WHERE size >= " + num + ";";
+        return query;
+    }
+    
+    private void showAvaRoom(String query) {
+        roomTableModel = (DefaultTableModel) jTableRoom.getModel();
+        
+        DBconnector db = new DBconnector();
+
+        // connect to database 
+        Connection connection = db.connectToDB();
+ 
+        Statement st;
+        ResultSet rs;
+
+        int i = 0;
+        Object[] row = new Object[1];
+        try {
+            st = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = st.executeQuery(query);
+
+            // Loops until the last row from the rows retrrieved is reached
+            while (rs.next()) {
+                // retrives the value of the designated column in the current row of this Result Set Object
+                row[0] = rs.getString("roomNumber");
+                roomTableModel.addRow(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     private void ShowAvaTimeSlots() {
 
         //DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
@@ -229,7 +296,34 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         }
     }
 
+    private void convertNameToUsername(String[] names) {
+        JOptionPane.showMessageDialog(null, "inside convert");
+        String query;
+        int size = names.length;
 
+        DBconnector db = new DBconnector();
+        Connection connection = db.connectToDB();
+        Statement st;
+        ResultSet rs;
+        
+        for (int i = 1; i < size; i++) {
+            query = "SELECT username "
+                    + "FROM employees "
+                    + "WHERE name = '" + names[i] + "';";
+
+            try {
+                st = connection.createStatement();
+                // execute the given SQL statement and get the result
+                rs = st.executeQuery(query);
+                if (rs.next()) {
+                    names[i] = rs.getString("username");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -256,6 +350,9 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelAvailRoom = new javax.swing.JLabel();
         jLabelAvailTime = new javax.swing.JLabel();
         jButtonSendInvi = new javax.swing.JButton();
+        jLabelTopic = new javax.swing.JLabel();
+        jTextFieldTopic = new javax.swing.JTextField();
+        jButtonAvaRooms = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -347,44 +444,60 @@ public class EmpSendInvitation extends javax.swing.JFrame {
             }
         });
 
+        jLabelTopic.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelTopic.setText("Topic:");
+
+        jButtonAvaRooms.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonAvaRooms.setText("Available Rooms");
+        jButtonAvaRooms.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAvaRoomsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButtonAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelInvList)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(99, 99, 99)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelAvailTime)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(24, 24, 24)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelAvailRoom))
-                        .addGap(64, 64, 64))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(142, 142, 142))))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(253, 253, 253)
-                        .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
-                        .addComponent(jLabelEmpList)))
-                .addContainerGap(544, Short.MAX_VALUE))
+                        .addComponent(jLabelEmpList))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(523, 523, 523)
+                        .addComponent(jLabelTopic)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(75, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelInvList)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(34, 34, 34)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelAvailTime)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(24, 24, 24)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelAvailRoom)))
+                            .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(64, 64, 64))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(206, 206, 206))))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(16, 16, 16)
@@ -419,14 +532,22 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                         .addComponent(jLabelAvailRoom, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
                         .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(404, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(42, 42, 42)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelTopic)
+                            .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(8, 8, 8)
+                .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(323, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(70, 70, 70)
@@ -468,14 +589,27 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     // This method finds available time slots for the group of the selected employees
     private void jButtonAvaTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAvaTimeActionPerformed
         
+        inviTableModel = (DefaultTableModel) jTableInv.getModel();
+        timeTableModel = (DefaultTableModel) jTableTime.getModel();
+        
         // get the names of the selected employees
         int invTabSize = inviTableModel.getRowCount();
 
         String[] selectedNames = new String[invTabSize + 1];
-        selectedNames[1] = username; // the owner of the meeting is automatically included
+        selectedNames[0] = username; // the owner of the meeting is automatically included
 
-        for (int i = 1; i < invTabSize + 1; i++) {
-            selectedNames[i] = inviTableModel.getValueAt(i-1, 0).toString();
+        if (invTabSize >= 1) {
+            for (int i = 1; i < invTabSize + 1; i++) {
+                selectedNames[i] = inviTableModel.getValueAt(i - 1, 0).toString();
+            }
+        }
+        
+        // convert all the names in selectedNames into their usernames
+        convertNameToUsername(selectedNames);
+        
+        //// TEST:  test invitees in the table
+        for (int i = 0; i < selectedNames.length; i++) {
+               JOptionPane.showMessageDialog(null, selectedNames[i]);
         }
         
         // make the `allHours` table
@@ -485,15 +619,72 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         saveInGroupSch(selectedNames);
 
         // Display the available time slots in the table
+        timeTableModel.setRowCount(0); // refresh the table
         ShowAvaTimeSlots();
-
+        
         // Delete all the records in the `groupSchedule` nad the `allHours` tables
         deleteSchAndHrs();
+        
+
     }//GEN-LAST:event_jButtonAvaTimeActionPerformed
 
+    // This method sends an invitation to the selected invitees
     private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
-        // TODO add your handling code here:
+        String query, startTime, endTime, room, topic;
+        
+         // get the names of the selected employees
+        int invTabSize = inviTableModel.getRowCount();
+
+        String[] selectedNames = new String[invTabSize + 1];
+        selectedNames[0] = username; // the owner of the meeting is automatically included
+
+        for (int i = 1; i < invTabSize + 1; i++) {
+            selectedNames[i] = inviTableModel.getValueAt(i-1, 0).toString();
+            
+        }
+        // get the selected time, room number, and topic
+        timeTableModel = (DefaultTableModel) jTableTime.getModel();
+        roomTableModel = (DefaultTableModel) jTableRoom.getModel();
+        int i = jTableTime.getSelectedRow();
+        int j = jTableRoom.getSelectedRow();
+        startTime = timeTableModel.getValueAt(i, 0).toString(); // store the startTime
+        endTime = timeTableModel.getValueAt(i, 1).toString(); // store the endTime
+        room = roomTableModel.getValueAt(j, 0).toString();
+        topic = jTextFieldTopic.getText();
+        
+        //query = getSendInviQry(startTime, endTime, room, selectedNames);
+        
     }//GEN-LAST:event_jButtonSendInviActionPerformed
+
+
+    
+    // This method shows available rooms
+    private void jButtonAvaRoomsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAvaRoomsActionPerformed
+        
+        
+        String date,startTime, endTime, query;
+        int rowSelected;
+        int numOfInvitees;
+        timeTableModel = (DefaultTableModel) jTableTime.getModel();
+        roomTableModel = (DefaultTableModel) jTableRoom.getModel();
+        numOfInvitees = inviTableModel.getRowCount();
+        
+        // get date from the calendar 
+        date = getDateFromCal();
+        
+        // get the selected row and tis date in the time slot table'
+        rowSelected = jTableTime.getSelectedRow();
+        startTime = timeTableModel.getValueAt(rowSelected, 0).toString(); // store the startTime
+        endTime = timeTableModel.getValueAt(rowSelected, 1).toString(); // store the endTime
+        
+        // execute the query and display
+        query = getAvaRoomQry(date, startTime, endTime, numOfInvitees);
+        
+        // show available rooms
+        roomTableModel.setRowCount(0); // refresh the table
+        showAvaRoom(query);
+        
+    }//GEN-LAST:event_jButtonAvaRoomsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -532,6 +723,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
+    private javax.swing.JButton jButtonAvaRooms;
     private javax.swing.JButton jButtonAvaTime;
     private javax.swing.JButton jButtonRemove;
     private javax.swing.JButton jButtonSendInvi;
@@ -540,6 +732,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelAvailTime;
     private javax.swing.JLabel jLabelEmpList;
     private javax.swing.JLabel jLabelInvList;
+    private javax.swing.JLabel jLabelTopic;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -548,5 +741,8 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JTable jTableInv;
     private javax.swing.JTable jTableRoom;
     private javax.swing.JTable jTableTime;
+    private javax.swing.JTextField jTextFieldTopic;
     // End of variables declaration//GEN-END:variables
+
+
 }

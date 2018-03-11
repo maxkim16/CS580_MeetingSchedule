@@ -52,7 +52,11 @@
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jButtonSendInvi" min="-2" max="-2" attributes="0"/>
-                              <Component id="jButtonCalendar" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="jButtonCalendar" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="85" max="-2" attributes="0"/>
+                                  <Component id="jButtonManageMeeting" min="-2" max="-2" attributes="0"/>
+                              </Group>
                               <Component id="jLabelUserName" min="-2" pref="170" max="-2" attributes="0"/>
                               <Component id="jButtonCheckInvi" min="-2" max="-2" attributes="0"/>
                               <Component id="jButtonSendMultiInvi" min="-2" max="-2" attributes="0"/>
@@ -71,7 +75,10 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabelUserName" min="-2" pref="51" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jButtonCalendar" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jButtonCalendar" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="jButtonManageMeeting" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jButtonCheckInvi" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -145,6 +152,17 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonSendInviActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="jButtonManageMeeting">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Lucida Grande" size="18" style="0"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Manage Meeting"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonManageMeetingActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

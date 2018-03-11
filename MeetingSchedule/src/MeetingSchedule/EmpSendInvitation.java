@@ -210,15 +210,23 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 + "AND startTime = '" + st + "' AND "
                 + "endTime = '" + et + "' AND topic = '" + topic + "'";
         JOptionPane.showMessageDialog(null, queryToGetMeetingID);
-        for (int i = 0; i < names.length; i++) {
+        // i is set to 1 because the invitor does not need to add the meeting to his assignment
+        // instead, the meeting will be added directly into his schedule
+        for (int i = 1; i < names.length; i++) {
             queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
                     + "VALUES "
-                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchcked', '" + username + "', 'unchecked');";
+                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'declined', '" + username + "', 'unchecked');";
             JOptionPane.showMessageDialog(null, queryToInsertAssignment);
             executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
         }
-        
-
+    }
+    
+    private void insertEmpSchedule(String date, String startTime, String endTime, String topic) {
+        String query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
+                + "VALUES ('" + username + "', '" + date + "', '" + startTime + "', '" + endTime + "', '"
+                + topic + "', 'visible')";
+                    JOptionPane.showMessageDialog(null, query);
+                    executeSQLQuery(query, "EmpSchedule Inserted Successfully");
     }
 
     private String getRoomQuery(int num) {
@@ -375,6 +383,11 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelTopic = new javax.swing.JLabel();
         jTextFieldTopic = new javax.swing.JTextField();
         jButtonAvaRooms = new javax.swing.JButton();
+        jLabelSt = new javax.swing.JLabel();
+        jLabelEt = new javax.swing.JLabel();
+        jTextFieldEt = new javax.swing.JTextField();
+        jButtonSendDirectInv = new javax.swing.JButton();
+        jTextFieldSt = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -459,7 +472,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelAvailTime.setText("Available Time Slots");
 
         jButtonSendInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonSendInvi.setText("Send Invitation");
+        jButtonSendInvi.setText("Send Invitations");
         jButtonSendInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSendInviActionPerformed(evt);
@@ -477,49 +490,84 @@ public class EmpSendInvitation extends javax.swing.JFrame {
             }
         });
 
+        jLabelSt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelSt.setText("StartTime");
+
+        jLabelEt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jLabelEt.setText("EndTime");
+
+        jTextFieldEt.setText("00:00:00");
+
+        jButtonSendDirectInv.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonSendDirectInv.setText("Check Schedule");
+        jButtonSendDirectInv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSendDirectInvActionPerformed(evt);
+            }
+        });
+
+        jTextFieldSt.setText("00:00:00");
+        jTextFieldSt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldStActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(149, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelInvList)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(99, 99, 99)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelAvailTime)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelAvailRoom)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(64, 64, 64))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addComponent(jLabelEmpList))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(523, 523, 523)
-                        .addComponent(jLabelTopic)
+                        .addGap(32, 32, 32)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabelEt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelSt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(75, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldEt, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSendDirectInv, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldSt, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabelTopic)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonRemove, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelInvList)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(34, 34, 34)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabelAvailTime)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(24, 24, 24)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabelAvailRoom)))
-                            .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(64, 64, 64))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(206, 206, 206))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(78, 78, 78))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(16, 16, 16)
@@ -557,19 +605,29 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonAvaTime, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(23, 23, 23)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabelTopic)
                             .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(8, 8, 8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(323, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelSt)
+                    .addComponent(jTextFieldSt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldEt, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelEt))
+                .addGap(18, 18, 18)
+                .addComponent(jButtonSendDirectInv, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(70, 70, 70)
@@ -687,6 +745,9 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         
         // Invite the selected employees
         insertAssignment(date, startTime, endTime, room, selectedNames, topic);
+        
+        // Put the meeting in the schedule
+        insertEmpSchedule(date, startTime, endTime, topic);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
 
@@ -718,6 +779,14 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         showAvaRoom(query);
         
     }//GEN-LAST:event_jButtonAvaRoomsActionPerformed
+
+    private void jButtonSendDirectInvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendDirectInvActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonSendDirectInvActionPerformed
+
+    private void jTextFieldStActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldStActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldStActionPerformed
 
     /**
      * @param args the command line arguments
@@ -759,12 +828,15 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JButton jButtonAvaRooms;
     private javax.swing.JButton jButtonAvaTime;
     private javax.swing.JButton jButtonRemove;
+    private javax.swing.JButton jButtonSendDirectInv;
     private javax.swing.JButton jButtonSendInvi;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabelAvailRoom;
     private javax.swing.JLabel jLabelAvailTime;
     private javax.swing.JLabel jLabelEmpList;
+    private javax.swing.JLabel jLabelEt;
     private javax.swing.JLabel jLabelInvList;
+    private javax.swing.JLabel jLabelSt;
     private javax.swing.JLabel jLabelTopic;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -774,6 +846,8 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JTable jTableInv;
     private javax.swing.JTable jTableRoom;
     private javax.swing.JTable jTableTime;
+    private javax.swing.JTextField jTextFieldEt;
+    private javax.swing.JTextField jTextFieldSt;
     private javax.swing.JTextField jTextFieldTopic;
     // End of variables declaration//GEN-END:variables
 

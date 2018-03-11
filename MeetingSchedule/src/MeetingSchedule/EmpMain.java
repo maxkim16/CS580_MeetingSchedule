@@ -57,6 +57,7 @@ public class EmpMain extends javax.swing.JFrame {
         jButtonCheckInvi = new javax.swing.JButton();
         jButtonSendMultiInvi = new javax.swing.JButton();
         jButtonSendInvi = new javax.swing.JButton();
+        jButtonManageMeeting = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,6 +100,14 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonManageMeeting.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonManageMeeting.setText("Manage Meeting");
+        jButtonManageMeeting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonManageMeetingActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -112,7 +121,10 @@ public class EmpMain extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButtonSendInvi)
-                            .addComponent(jButtonCalendar)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButtonCalendar)
+                                .addGap(85, 85, 85)
+                                .addComponent(jButtonManageMeeting))
                             .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonCheckInvi)
                             .addComponent(jButtonSendMultiInvi))
@@ -126,7 +138,9 @@ public class EmpMain extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButtonCalendar)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonCalendar)
+                    .addComponent(jButtonManageMeeting))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonCheckInvi)
                 .addGap(18, 18, 18)
@@ -177,6 +191,10 @@ public class EmpMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
+    private void jButtonManageMeetingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonManageMeetingActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonManageMeetingActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -216,6 +234,7 @@ public class EmpMain extends javax.swing.JFrame {
     private datechooser.beans.DateChooserCombo dateChooserCombo1;
     private javax.swing.JButton jButtonCalendar;
     private javax.swing.JButton jButtonCheckInvi;
+    private javax.swing.JButton jButtonManageMeeting;
     private javax.swing.JButton jButtonSendInvi;
     private javax.swing.JButton jButtonSendMultiInvi;
     private javax.swing.JLabel jLabel1;

@@ -155,7 +155,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         date = getDateFromCal();
         for (int i = 0; i < names.length; i++) {
             query = getGrpSchQuery(names[i], date);
-                           JOptionPane.showMessageDialog(null, "get group schedule" + query);
+                           //JOptionPane.showMessageDialog(null, "get group schedule" + query);
 
             executeSQLQuery(query, "schedule inserted into groupSchedule");
         }
@@ -188,17 +188,39 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 + "AND meetings.date = '" + date + "' "
                 + "AND meetings.startTime = '" + st + "' "
                 + "AND meetings.endTime = '" + et + "' );";
-                        JOptionPane.showMessageDialog(null, query);
+                       // JOptionPane.showMessageDialog(null, query);
         return query;
     }
 
-    // This method sends the invitation to the selected invitees
-    private String getSendInviQry(String startTime, String endTime, String room, String[] names) {
-        int numOfInvitees = inviTableModel.getRowCount();
-        String query = "INSERT INTO ";
+    private String getMakeMeetingQry(String date, String st, String et, String topic, String room) {
+        String query = "INSERT INTO meetings(room, ownerID, date, startTime, endTime, topic) "
+                + "VALUES ( " + room + ", '" + username + "', '" + date + "', '" + st + "', '"
+                + et + "', '" + topic + "'); ";
+        JOptionPane.showMessageDialog(null, query);
         return query;
     }
     
+    // This method sends the invitation to the selected invitees
+    private void insertAssignment(String date, String st, String et, String room, String[] names, String topic) {
+        String queryToGetMeetingID, queryToInsertAssignment;
+        // This query returns the id of the meeting the invitor newly created, which the selected invitees will come to
+        queryToGetMeetingID = "SELECT id "
+                + "FROM meetings "
+                + "WHERE date = '" + date + "' "
+                + "AND startTime = '" + st + "' AND "
+                + "endTime = '" + et + "' AND topic = '" + topic + "'";
+        JOptionPane.showMessageDialog(null, queryToGetMeetingID);
+        for (int i = 0; i < names.length; i++) {
+            queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
+                    + "VALUES "
+                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchcked', '" + username + "', 'unchecked');";
+            JOptionPane.showMessageDialog(null, queryToInsertAssignment);
+            executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
+        }
+        
+
+    }
+
     private String getRoomQuery(int num) {
         String query = "SELECT id AS roomNumber "
                 + "FROM rooms "
@@ -608,9 +630,9 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         convertNameToUsername(selectedNames);
         
         //// TEST:  test invitees in the table
-        for (int i = 0; i < selectedNames.length; i++) {
-               JOptionPane.showMessageDialog(null, selectedNames[i]);
-        }
+        //for (int i = 0; i < selectedNames.length; i++) {
+        //       JOptionPane.showMessageDialog(null, "names(i): " + selectedNames[i]);
+        //}
         
         // make the `allHours` table
         makeAllHours();
@@ -630,7 +652,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
 
     // This method sends an invitation to the selected invitees
     private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
-        String query, startTime, endTime, room, topic;
+        String query, startTime, endTime, room, topic, date;
         
          // get the names of the selected employees
         int invTabSize = inviTableModel.getRowCount();
@@ -638,10 +660,16 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         String[] selectedNames = new String[invTabSize + 1];
         selectedNames[0] = username; // the owner of the meeting is automatically included
 
-        for (int i = 1; i < invTabSize + 1; i++) {
-            selectedNames[i] = inviTableModel.getValueAt(i-1, 0).toString();
-            
+        if (invTabSize >= 1) {
+            for (int i = 1; i < invTabSize + 1; i++) {
+                selectedNames[i] = inviTableModel.getValueAt(i - 1, 0).toString();
+
+            }
         }
+        
+        // replace all the names in selectedNames with their usernames
+        convertNameToUsername(selectedNames);
+        
         // get the selected time, room number, and topic
         timeTableModel = (DefaultTableModel) jTableTime.getModel();
         roomTableModel = (DefaultTableModel) jTableRoom.getModel();
@@ -651,9 +679,14 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         endTime = timeTableModel.getValueAt(i, 1).toString(); // store the endTime
         room = roomTableModel.getValueAt(j, 0).toString();
         topic = jTextFieldTopic.getText();
+        date = getDateFromCal();
         
-        //query = getSendInviQry(startTime, endTime, room, selectedNames);
+        // Create a meeting
+        query = getMakeMeetingQry(date, startTime, endTime, topic, room);
+        executeSQLQuery(query, "Meeting Inserted Successfully");
         
+        // Invite the selected employees
+        insertAssignment(date, startTime, endTime, room, selectedNames, topic);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
 

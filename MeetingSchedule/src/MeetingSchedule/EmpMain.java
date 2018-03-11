@@ -191,8 +191,10 @@ public class EmpMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
+    // This method opens up the EmpManageMeeting jFrame
     private void jButtonManageMeetingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonManageMeetingActionPerformed
-        // TODO add your handling code here:
+        EmpManageMeeting empMan = new EmpManageMeeting(username);
+        empMan.setVisible(true);
     }//GEN-LAST:event_jButtonManageMeetingActionPerformed
 
     /**

@@ -8,6 +8,7 @@ package MeetingSchedule;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -51,6 +52,8 @@ public class EmpManageMeeting extends javax.swing.JFrame {
         return query;
     }
     
+    // This method returns all the invitees
+    // Using multiple INNER JOIN, replacing usernames with their actual name was avoided!!
     public String getInviteeQuery(String meetingID) {
         String query = "SELECT name "
                 + "FROM employees INNER JOIN assignments "
@@ -83,6 +86,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
                 
         // initilize the table
         modelInvitees = (DefaultTableModel)jTableInvitees.getModel();
+        modelInvitees.setRowCount(0); //Refresh the table
         
         // connect to the database
         DBconnector db = new DBconnector();
@@ -119,6 +123,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
                 
         // initilize the table
         modelRooms = (DefaultTableModel)jTableRooms.getModel();
+        modelRooms.setRowCount(0); // refresh the table
         
         // connect to the database
         DBconnector db = new DBconnector();
@@ -148,6 +153,32 @@ public class EmpManageMeeting extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    
+    // Execute The SQL Query and refresh the table
+    public void executeSQLQuery(String query, String message)
+    {
+        DBconnector db = new DBconnector();
+        Connection con = db.connectToDB();
+        Statement st;
+        try{
+            st = con.createStatement();
+            // execute the query
+            if((st.executeUpdate(query)) == 1)
+            {
+                // refresh jtable data so the new data created is displayed as well
+             
+                // Display the message
+                JOptionPane.showMessageDialog(null, message);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, message + " failed.");   
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     
     // This method will display all the invitations the user has in the table
     private void showMeetingsInTable() {
@@ -223,7 +254,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
         jButtonDisplayRooms = new javax.swing.JButton();
         jButtonDeleteRoom = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        jTextFieldIID = new javax.swing.JTextField();
+        jTextFieldID = new javax.swing.JTextField();
         jButtonChangeRoom1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -311,7 +342,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
 
         jButtonDeleteRoom.setBackground(new java.awt.Color(255, 153, 153));
         jButtonDeleteRoom.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonDeleteRoom.setText("Delete Room");
+        jButtonDeleteRoom.setText("Delete Meeting");
         jButtonDeleteRoom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDeleteRoomActionPerformed(evt);
@@ -364,7 +395,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                             .addComponent(jLabel6)
                                             .addGap(18, 18, 18)
-                                            .addComponent(jTextFieldIID, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGroup(layout.createSequentialGroup()
                                             .addComponent(jLabel4)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -387,7 +418,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
                             .addGap(54, 54, 54)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel6)
-                                .addComponent(jTextFieldIID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTextFieldID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel4)
@@ -419,7 +450,12 @@ public class EmpManageMeeting extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTableMeetingsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableMeetingsMouseClicked
-
+        int rowSelected = jTableMeetings.getSelectedRow();
+        modelMeetings = (DefaultTableModel) jTableMeetings.getModel();
+        
+        // TxtFdID.setText(model.getValueAt(i, 0).toString());
+        jTextFieldID.setText(modelMeetings.getValueAt(rowSelected, 0).toString());
+        jTextFieldRoom.setText(modelMeetings.getValueAt(rowSelected, 1).toString());
     }//GEN-LAST:event_jTableMeetingsMouseClicked
 
     private void jTableInviteesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableInviteesMouseClicked
@@ -468,12 +504,49 @@ public class EmpManageMeeting extends javax.swing.JFrame {
         showAvaRoomsInTable(query);
     }//GEN-LAST:event_jButtonDisplayRoomsActionPerformed
 
+    // This method deletes the selected room in the table
     private void jButtonDeleteRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteRoomActionPerformed
-        // TODO add your handling code here:
+        modelMeetings = (DefaultTableModel) jTableMeetings.getModel();
+
+        // Delete all the invitations associated with the meeting
+        String meetingID;
+        meetingID = jTextFieldID.getText();
+        String deleteInvitQry = "DELETE "
+                + "FROM assignments "
+                + "WHERE meetingID = " + meetingID + ";";
+        executeSQLQuery(deleteInvitQry, "assignments(invitations) deleted successfully");
+        
+
+        // Delete the meeting
+        String deleteMeetingQry = "DELETE "
+                + "FROM meetings "
+                + "WHERE ID = " + meetingID + ";";
+       executeSQLQuery(deleteMeetingQry, "meeting deleted successfully");
+       
+       // Refresh the meeting table
+       modelMeetings.setRowCount(0);
+       showMeetingsInTable();
+       
     }//GEN-LAST:event_jButtonDeleteRoomActionPerformed
 
+    // Updates a new room number
     private void jButtonChangeRoom1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonChangeRoom1ActionPerformed
-        // TODO add your handling code here:
+        String newRoomNum = jTextFieldRoom.getText();
+        String meetingID = jTextFieldID.getText();
+        modelMeetings = (DefaultTableModel) jTableMeetings.getModel();
+        
+        
+        // update in `meetings`
+        String query = "UPDATE meetings "
+                + "SET room = " + newRoomNum + " "
+                + "WHERE id = " + meetingID + "; ";
+        executeSQLQuery(query, "Room Number Changed Successfully");
+        
+        // refresh the table
+        modelMeetings.setRowCount(0);
+        showMeetingsInTable();
+        
+        
     }//GEN-LAST:event_jButtonChangeRoom1ActionPerformed
 
     /**
@@ -527,7 +600,7 @@ public class EmpManageMeeting extends javax.swing.JFrame {
     private javax.swing.JTable jTableInvitees;
     private javax.swing.JTable jTableMeetings;
     private javax.swing.JTable jTableRooms;
-    private javax.swing.JTextField jTextFieldIID;
+    private javax.swing.JTextField jTextFieldID;
     private javax.swing.JTextField jTextFieldIInv;
     private javax.swing.JTextField jTextFieldRoom;
     // End of variables declaration//GEN-END:variables

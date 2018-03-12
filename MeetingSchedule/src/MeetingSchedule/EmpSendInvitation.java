@@ -215,7 +215,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         for (int i = 1; i < names.length; i++) {
             queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
                     + "VALUES "
-                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'declined', '" + username + "', 'unchecked');";
+                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchecked', '" + username + "', 'unchecked');";
             JOptionPane.showMessageDialog(null, queryToInsertAssignment);
             executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
         }
@@ -580,9 +580,9 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelEmpList, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelInvList, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelInvList, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabelEmpList, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(79, 79, 79)
@@ -746,7 +746,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         // Invite the selected employees
         insertAssignment(date, startTime, endTime, room, selectedNames, topic);
         
-        // Put the meeting in the schedule
+        // Put the meeting in the schedule of the invitor 
         insertEmpSchedule(date, startTime, endTime, topic);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 

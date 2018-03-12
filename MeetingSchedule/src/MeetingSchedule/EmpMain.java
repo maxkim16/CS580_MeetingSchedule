@@ -58,6 +58,7 @@ public class EmpMain extends javax.swing.JFrame {
         jButtonSendMultiInvi = new javax.swing.JButton();
         jButtonSendInvi = new javax.swing.JButton();
         jButtonManageMeeting = new javax.swing.JButton();
+        jButtonMeetingStatus = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -108,6 +109,14 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonMeetingStatus.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonMeetingStatus.setText("Meeting Status");
+        jButtonMeetingStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonMeetingStatusActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -121,13 +130,16 @@ public class EmpMain extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jButtonSendInvi)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButtonCalendar)
-                                .addGap(85, 85, 85)
-                                .addComponent(jButtonManageMeeting))
                             .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonCheckInvi)
-                            .addComponent(jButtonSendMultiInvi))
+                            .addComponent(jButtonSendMultiInvi)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonCalendar)
+                                    .addComponent(jButtonCheckInvi))
+                                .addGap(62, 62, 62)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonMeetingStatus)
+                                    .addComponent(jButtonManageMeeting))))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -142,7 +154,9 @@ public class EmpMain extends javax.swing.JFrame {
                     .addComponent(jButtonCalendar)
                     .addComponent(jButtonManageMeeting))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButtonCheckInvi)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonCheckInvi)
+                    .addComponent(jButtonMeetingStatus))
                 .addGap(18, 18, 18)
                 .addComponent(jButtonSendInvi)
                 .addGap(26, 26, 26)
@@ -197,6 +211,12 @@ public class EmpMain extends javax.swing.JFrame {
         empMan.setVisible(true);
     }//GEN-LAST:event_jButtonManageMeetingActionPerformed
 
+    // Opens up the EmpMeetingStatus jFrame
+    private void jButtonMeetingStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonMeetingStatusActionPerformed
+        EmpMeetingStatus e = new EmpMeetingStatus(username);
+        e.setVisible(true);
+    }//GEN-LAST:event_jButtonMeetingStatusActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -237,6 +257,7 @@ public class EmpMain extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCalendar;
     private javax.swing.JButton jButtonCheckInvi;
     private javax.swing.JButton jButtonManageMeeting;
+    private javax.swing.JButton jButtonMeetingStatus;
     private javax.swing.JButton jButtonSendInvi;
     private javax.swing.JButton jButtonSendMultiInvi;
     private javax.swing.JLabel jLabel1;

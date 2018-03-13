@@ -86,7 +86,7 @@ public class EmpMain extends javax.swing.JFrame {
         });
 
         jButtonSendMultiInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonSendMultiInvi.setText("Send Multiple Invitations");
+        jButtonSendMultiInvi.setText("Send Invitation/Available Time");
         jButtonSendMultiInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSendMultiInviActionPerformed(evt);
@@ -202,7 +202,8 @@ public class EmpMain extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonSendMultiInviActionPerformed
 
     private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
-        // TODO add your handling code here:
+        EmpSendInvitationNotAva e = new EmpSendInvitationNotAva(username);
+        e.setVisible(true);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
     // This method opens up the EmpManageMeeting jFrame

@@ -16,6 +16,8 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author maxkim
  */
+
+// SendInvitation/Available Time jFrmae
 public class EmpSendInvitation extends javax.swing.JFrame {
 
     // username is received from the EmpMain jFrame
@@ -25,7 +27,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
             roomTableModel;
 
     /**
-     * Creates new form EmpSendInvitation
+     * Creates new form EmpSendInvitation2
      */
     public EmpSendInvitation() {
         initComponents();
@@ -224,7 +226,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private void insertEmpSchedule(String date, String startTime, String endTime, String topic) {
         String query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
                 + "VALUES ('" + username + "', '" + date + "', '" + startTime + "', '" + endTime + "', '"
-                + topic + "', 'visible')";
+                + topic + "', 'public')";
                     JOptionPane.showMessageDialog(null, query);
                     executeSQLQuery(query, "EmpSchedule Inserted Successfully");
     }
@@ -383,11 +385,6 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelTopic = new javax.swing.JLabel();
         jTextFieldTopic = new javax.swing.JTextField();
         jButtonAvaRooms = new javax.swing.JButton();
-        jLabelSt = new javax.swing.JLabel();
-        jLabelEt = new javax.swing.JLabel();
-        jTextFieldEt = new javax.swing.JTextField();
-        jButtonSendDirectInv = new javax.swing.JButton();
-        jTextFieldSt = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -490,29 +487,6 @@ public class EmpSendInvitation extends javax.swing.JFrame {
             }
         });
 
-        jLabelSt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabelSt.setText("StartTime");
-
-        jLabelEt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabelEt.setText("EndTime");
-
-        jTextFieldEt.setText("00:00:00");
-
-        jButtonSendDirectInv.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonSendDirectInv.setText("Check Schedule");
-        jButtonSendDirectInv.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSendDirectInvActionPerformed(evt);
-            }
-        });
-
-        jTextFieldSt.setText("00:00:00");
-        jTextFieldSt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldStActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -543,21 +517,9 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                         .addComponent(jButtonAvaRooms, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(64, 64, 64))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabelEmpList))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabelEt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelSt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldEt, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonSendDirectInv, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextFieldSt, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(17, 17, 17)
+                .addComponent(jLabelEmpList)
+                .addContainerGap(885, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabelTopic)
@@ -617,17 +579,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                             .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 176, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelSt)
-                    .addComponent(jTextFieldSt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextFieldEt, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelEt))
-                .addGap(18, 18, 18)
-                .addComponent(jButtonSendDirectInv, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46))
+                .addContainerGap(350, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(70, 70, 70)
@@ -746,7 +698,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         // Invite the selected employees
         insertAssignment(date, startTime, endTime, room, selectedNames, topic);
         
-        // Put the meeting in the schedule of the invitor 
+        // Put the meeting in the schedule of the invitor automatically
         insertEmpSchedule(date, startTime, endTime, topic);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
@@ -779,14 +731,6 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         showAvaRoom(query);
         
     }//GEN-LAST:event_jButtonAvaRoomsActionPerformed
-
-    private void jButtonSendDirectInvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendDirectInvActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonSendDirectInvActionPerformed
-
-    private void jTextFieldStActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldStActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldStActionPerformed
 
     /**
      * @param args the command line arguments
@@ -828,15 +772,12 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JButton jButtonAvaRooms;
     private javax.swing.JButton jButtonAvaTime;
     private javax.swing.JButton jButtonRemove;
-    private javax.swing.JButton jButtonSendDirectInv;
     private javax.swing.JButton jButtonSendInvi;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabelAvailRoom;
     private javax.swing.JLabel jLabelAvailTime;
     private javax.swing.JLabel jLabelEmpList;
-    private javax.swing.JLabel jLabelEt;
     private javax.swing.JLabel jLabelInvList;
-    private javax.swing.JLabel jLabelSt;
     private javax.swing.JLabel jLabelTopic;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -846,8 +787,6 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     private javax.swing.JTable jTableInv;
     private javax.swing.JTable jTableRoom;
     private javax.swing.JTable jTableTime;
-    private javax.swing.JTextField jTextFieldEt;
-    private javax.swing.JTextField jTextFieldSt;
     private javax.swing.JTextField jTextFieldTopic;
     // End of variables declaration//GEN-END:variables
 

@@ -323,7 +323,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 + "VALUES ( " + username2 + ", " + date + ", " + startTime + ", " + endTime + ", "
                 + "(SELECT m.topic "
                 + "FROM meetings m "
-                + "WHERE m.id = " + meetingID + "), 'visible');";
+                + "WHERE m.id = " + meetingID + "), 'public');";
         
         // execute the query
         executeSQLQuery(query, "Inserted in to the calendar");

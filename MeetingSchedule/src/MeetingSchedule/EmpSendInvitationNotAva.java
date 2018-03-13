@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,7 +21,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
     String username;
     // used for the table to display schedule info
     DefaultTableModel empTableModel, inviTableModel, timeTableModel,
-            roomTableModel, meetingConModel;
+            roomTableModel, meetingConModel, scheduleConModel;
     
     /**
      * Creates new form EmpSendInvitationNotAva
@@ -56,7 +57,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
     }
 
     // Query for getting all the meeting conflicts
-    private String getConflictQuery(String date, String st, String et) {
+    private String getMeetingConflictQuery(String date, String st, String et) {
         String query = "SELECT e.name, m.topic AS meeting, a.acceptance AS status "
                 + "FROM meetings AS m "
                 + "INNER JOIN assignments AS a "
@@ -69,6 +70,21 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         return query;
     }
     
+    // Query for getting all the schedule conflicts
+    private String getSchConflictQuery(String date, String st, String et) {
+        String query = "SELECT e.name, "
+                + "CASE esch.visibility WHEN 'private' THEN '' ELSE task END task, "
+                + "visibility "
+                + "FROM empSchedule AS esch "
+                + "INNER JOIN employees e "
+                + "ON esch.username = e.username "
+                + "WHERE visibility IN ('public', 'private') "
+                + "AND esch.date = '" + date + "' "
+                + "AND (esch.startTime <= '" + st + "' AND '" + st + "' <= esch.endTime "
+                + "OR '" + st + "' <= esch.startTime AND esch.startTime <= '" + et + "');";
+        return query;
+    }
+
     // This method returns a query that returns a set of the name of all the employees except for the user himself
     private String getEmpsQuery() {
         String query = "SELECT name "
@@ -86,8 +102,8 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         String date = dFormat.format(jDateChooser1.getDate());
         return date;
     }
-    
-        // Execute The SQL Query and refresh the table
+
+    // Execute The SQL Query and refresh the table
     public void executeSQLQuery(String query, String message) {
         DBconnector db = new DBconnector();
         Connection con = db.connectToDB();
@@ -102,7 +118,6 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
 
                 // Display the message
                 // JOptionPane.showMessageDialog(null, message);
-                
                 st.close();
                 con.close();
             } else {
@@ -114,23 +129,48 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
-    
+
+    private void convertNameToUsername(String[] names) {
+        JOptionPane.showMessageDialog(null, "inside convert");
+        String query;
+        int size = names.length;
+
+        DBconnector db = new DBconnector();
+        Connection connection = db.connectToDB();
+        Statement st;
+        ResultSet rs;
+
+        for (int i = 1; i < size; i++) {
+            query = "SELECT username "
+                    + "FROM employees "
+                    + "WHERE name = '" + names[i] + "';";
+
+            try {
+                st = connection.createStatement();
+                // execute the given SQL statement and get the result
+                rs = st.executeQuery(query);
+                if (rs.next()) {
+                    names[i] = rs.getString("username");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void displayMeetingConflicts(String query) {
 
-
         // initilize the table
         meetingConModel = (DefaultTableModel) jTableMeetingCon.getModel();
-        
+
         // refresh the table
         meetingConModel.setRowCount(0);
-        
+
         // connect to the database
         DBconnector db = new DBconnector();
 
         // connect to database 
         Connection connection = db.connectToDB();
-
 
         Statement st;
         ResultSet rs;
@@ -156,7 +196,46 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         }
 
     }
-    
+
+    private void displayScheduleConflicts(String query) {
+
+        // initilize the table
+        scheduleConModel = (DefaultTableModel) jTableSchedule.getModel();
+
+        // refresh the table
+        scheduleConModel.setRowCount(0);
+
+        // connect to the database
+        DBconnector db = new DBconnector();
+
+        // connect to database 
+        Connection connection = db.connectToDB();
+
+        Statement st;
+        ResultSet rs;
+
+        Object[] row = new Object[3];
+        try {
+            st = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = st.executeQuery(query);
+
+            // Loops until the last row of the rows retrrieved is reached
+            while (rs.next()) {
+                // retrives the value of the designated column in the current row of this Result Set Object
+                row[0] = rs.getString("name");
+                row[1] = rs.getString("task");
+                row[2] = rs.getString("visibility");
+                scheduleConModel.addRow(row);
+            }
+            st.close();
+            rs.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void displayEmps() {
 
         int meetingId;
@@ -192,7 +271,43 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
+
+    private String getMakeMeetingQry(String date, String st, String et, String topic, String room) {
+        String query = "INSERT INTO meetings(room, ownerID, date, startTime, endTime, topic) "
+                + "VALUES ( " + room + ", '" + username + "', '" + date + "', '" + st + "', '"
+                + et + "', '" + topic + "'); ";
+        JOptionPane.showMessageDialog(null, query);
+        return query;
+    }
+
+    // This method sends the invitation to the selected invitees
+    private void insertAssignment(String date, String st, String et, String room, String[] names, String topic) {
+        String queryToGetMeetingID, queryToInsertAssignment;
+        // This query returns the id of the meeting the invitor newly created, which the selected invitees will come to
+        queryToGetMeetingID = "SELECT id "
+                + "FROM meetings "
+                + "WHERE date = '" + date + "' "
+                + "AND startTime = '" + st + "' AND "
+                + "endTime = '" + et + "' AND topic = '" + topic + "'";
+        JOptionPane.showMessageDialog(null, queryToGetMeetingID);
+        // i is set to 1 because the invitor does not need to add the meeting to his assignment
+        // instead, the meeting will be added directly into his schedule
+        for (int i = 1; i < names.length; i++) {
+            queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
+                    + "VALUES "
+                    + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchecked', '" + username + "', 'unchecked');";
+            JOptionPane.showMessageDialog(null, queryToInsertAssignment);
+            executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
+        }
+    }
+
+    private void insertEmpSchedule(String date, String startTime, String endTime, String topic) {
+        String query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
+                + "VALUES ('" + username + "', '" + date + "', '" + startTime + "', '" + endTime + "', '"
+                + topic + "', 'public')";
+        JOptionPane.showMessageDialog(null, query);
+        executeSQLQuery(query, "EmpSchedule Inserted Successfully");
+    }
     
     // show all the rooms that are available
     private void showAvaRoom(String query) {
@@ -257,7 +372,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         jTextFieldTopic = new javax.swing.JTextField();
         jButtonSendInvi = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableSchedule = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
         jTableMeetingCon = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
@@ -329,10 +444,10 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         });
 
         jLabelSt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabelSt.setText("StartTime:");
+        jLabelSt.setText("EndTime:");
 
         jLabelEt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jLabelEt.setText("EndTime:");
+        jLabelEt.setText("StartTime:");
 
         jTextFieldSt.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jTextFieldSt.setText("00:00:00");
@@ -363,15 +478,15 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
             }
         });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableSchedule.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "schedule", "public/private"
+                "name", "task", "visibility"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTableSchedule);
 
         jTableMeetingCon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -386,6 +501,11 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         jButton1.setBackground(new java.awt.Color(255, 255, 204));
         jButton1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButton1.setText("Check Schedule Conflicts");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setBackground(new java.awt.Color(255, 255, 204));
         jButton2.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
@@ -432,7 +552,6 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
                         .addGap(465, 465, 465))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelEt, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(jTextFieldSt, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -442,14 +561,15 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabelTopic)
                                 .addGap(18, 18, 18)
-                                .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jTextFieldTopic, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabelEt, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
                             .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 36, Short.MAX_VALUE)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jButtonSendInvi, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -586,29 +706,75 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
 
     // Send a new invitation
     private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
-        // Check conflicts before sending it
-        
-        // notify conflict exists. still send? yes - > send
-        
-        // no? don't send
+        String query, startTime, endTime, room, topic, date;
+        inviTableModel = (DefaultTableModel) jTableInv.getModel();
+        // get the names of the selected employees
+        int invTabSize = inviTableModel.getRowCount();
+        startTime = jTextFieldSt.getText();
+        endTime = jTextFieldEt.getText();
+
+        String[] selectedNames = new String[invTabSize + 1];
+        selectedNames[0] = username; // the owner of the meeting is automatically included
+
+        if (invTabSize >= 1) {
+            for (int i = 1; i < invTabSize + 1; i++) {
+                selectedNames[i] = inviTableModel.getValueAt(i - 1, 0).toString();
+            }
+        }
+
+        // replace all the names in selectedNames with their usernames
+        convertNameToUsername(selectedNames);
+
+        // get the selected time, room number, and topic
+        roomTableModel = (DefaultTableModel) jTableRoom.getModel();
+        int j = jTableRoom.getSelectedRow();
+        room = roomTableModel.getValueAt(j, 0).toString();
+        topic = jTextFieldTopic.getText();
+        date = getDateFromCal();
+
+        // Create a meeting
+        query = getMakeMeetingQry(date, startTime, endTime, topic, room);
+        executeSQLQuery(query, "Meeting Inserted Successfully");
+
+        // Invite the selected employees
+        insertAssignment(date, startTime, endTime, room, selectedNames, topic);
+
+        // Put the meeting in the schedule of the invitor automatically
+        insertEmpSchedule(date, startTime, endTime, topic);
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
     // Display the meeting conflicts
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // get the selected date, start time, and end time
-        String date, st, et, queryConflicts; 
+        String date, st, et, queryMeetingConflicts; 
         date = getDateFromCal();
         st = jTextFieldSt.getText();
         et = jTextFieldEt.getText();
         
         // get the query that displays all the meeting conflicts
-        queryConflicts = getConflictQuery(date, st, et);
+        queryMeetingConflicts = getMeetingConflictQuery(date, st, et);
         
         // Display all the conflicts
-        displayMeetingConflicts(queryConflicts);
+        displayMeetingConflicts(queryMeetingConflicts);
         
         
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    // This method display all the shcedule conflicts
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // get the selected date, start time, and end time
+        String date, st, et, queryScheduleConflicts; 
+        date = getDateFromCal();
+        st = jTextFieldSt.getText();
+        et = jTextFieldEt.getText();
+        
+        // get the query that displays all the meeting conflicts
+        queryScheduleConflicts = getSchConflictQuery(date, st, et);
+        
+        // Display all the conflicts
+        displayScheduleConflicts(queryScheduleConflicts);
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -663,11 +829,11 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTableEmp;
     private javax.swing.JTable jTableInv;
     private javax.swing.JTable jTableMeetingCon;
     private javax.swing.JTable jTableRoom;
+    private javax.swing.JTable jTableSchedule;
     private javax.swing.JTextField jTextFieldEt;
     private javax.swing.JTextField jTextFieldSt;
     private javax.swing.JTextField jTextFieldTopic;

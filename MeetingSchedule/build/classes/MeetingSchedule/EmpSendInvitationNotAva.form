@@ -65,7 +65,6 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jLabelEt" alignment="0" min="-2" pref="85" max="-2" attributes="0"/>
                           <Group type="103" alignment="0" groupAlignment="1" attributes="0">
                               <Component id="jTextFieldSt" alignment="1" min="-2" pref="91" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
@@ -79,15 +78,16 @@
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="jTextFieldTopic" min="-2" pref="168" max="-2" attributes="0"/>
                           </Group>
+                          <Component id="jLabelEt" alignment="0" min="-2" pref="93" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jButton2" max="32767" attributes="0"/>
+                          <Component id="jButton2" pref="280" max="32767" attributes="0"/>
                           <Component id="jScrollPane5" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <EmptySpace type="unrelated" max="32767" attributes="0"/>
+                              <EmptySpace type="unrelated" pref="36" max="32767" attributes="0"/>
                               <Component id="jScrollPane1" min="-2" pref="307" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jButtonSendInvi" min="-2" pref="225" max="-2" attributes="0"/>
@@ -321,7 +321,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Lucida Grande" size="18" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="StartTime:"/>
+        <Property name="text" type="java.lang.String" value="EndTime:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabelEt">
@@ -329,7 +329,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Lucida Grande" size="18" style="0"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="EndTime:"/>
+        <Property name="text" type="java.lang.String" value="StartTime:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="jTextFieldSt">
@@ -385,16 +385,22 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="jTable1">
+        <Component class="javax.swing.JTable" name="jTableSchedule">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="2" rowCount="0">
-                <Column editable="true" title="schedule" type="java.lang.Object"/>
-                <Column editable="true" title="public/private" type="java.lang.Object"/>
+              <Table columnCount="3" rowCount="0">
+                <Column editable="true" title="name" type="java.lang.Object"/>
+                <Column editable="true" title="task" type="java.lang.Object"/>
+                <Column editable="true" title="visibility" type="java.lang.Object"/>
               </Table>
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -466,6 +472,9 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Check Schedule Conflicts"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton2">
       <Properties>

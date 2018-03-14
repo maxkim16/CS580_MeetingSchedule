@@ -48,6 +48,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         
         // initilize the table
         model = (DefaultTableModel)jTableInvitations.getModel();
+        model.setRowCount(0);  // refresh the table
         
         // connect to the database
         DBconnector db = new DBconnector();
@@ -144,22 +145,25 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         DBconnector db = new DBconnector();
         Connection con = db.connectToDB();
         Statement st;
+        // Refresh the table
+        //model = (DefaultTableModel)jTableInvitations.getModel();
+        //model.setRowCount(0);
         try{
             st = con.createStatement();
             // execute the query
             if((st.executeUpdate(query)) == 1)
             {
                 // refresh jtable data so the new data created is displayed as well
-                model = (DefaultTableModel)jTableInvitations.getModel();
-                model.setRowCount(0);
-                showInvitationsInTable();
+                //model = (DefaultTableModel)jTableInvitations.getModel();
+                //model.setRowCount(0);
+                //showInvitationsInTable();
                 
                 // Display the message
-                JOptionPane.showMessageDialog(null, "Data " + message + " Successfully");
+                //JOptionPane.showMessageDialog(null, "Data " + message + " Successfully");
             }
             else
             {
-                JOptionPane.showMessageDialog(null, "Data " + message + " not Successfully");   
+                //JOptionPane.showMessageDialog(null, "Data " + message + " not Successfully");   
             }
         }catch(Exception ex) {
             ex.printStackTrace();
@@ -296,8 +300,50 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
           
     }//GEN-LAST:event_jTableInvitationsMouseClicked
 
+    private String getSchConflictQuery(String date, String st, String et) {
+                String query = "SELECT * "
+                + "FROM empSchedule "
+                + "WHERE date = '" + date + "' "
+                        + "AND username = '" + username + "' "
+                + "AND (startTime <= '" + st + "' AND '" + st + "' <= endTime "
+                        + "OR '" + st + "' <= startTime AND startTime <= '" + et + "');";
+                return query;
+    }
+    
+    // run the query and see if the result sets return any table
+    private Boolean DoesConflictExist(String date, String st, String et) { 
+        
+        // get the query that displays all the schedule conflicts
+        String queryScheduleConflicts = getSchConflictQuery(date, st, et);
+                        
+        // connect to the database
+        DBconnector db = new DBconnector();
+        Connection connection = db.connectToDB();
+        Statement statement;
+        ResultSet rs;
+
+        try {
+            statement = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = statement.executeQuery(queryScheduleConflicts);
+
+            // Loops until the last row of the rows retrrieved is reached
+            while (rs.next()) {
+                // if anything is returned, that means there is a conflict
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // if no data is returned, there is no conflict
+        return false;
+    }
+    
     // Make an invitation a new schedule once the user accepts the invitation
     private void jButtonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAcceptActionPerformed
+        
+
         
         String query, username2,date, startTime, endTime, meetingID, task, visibility;
         
@@ -311,6 +357,12 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         startTime = model.getValueAt(i, 5).toString();
         endTime = model.getValueAt(i, 6).toString();
         
+        // Check if there is a conflict
+        // If there is a conflict, exit the function.
+        if ( (DoesConflictExist(date, startTime, endTime)) == true ) {
+            JOptionPane.showMessageDialog(null, "There is a time conflict. Please check your schedule.");   
+            return; 
+        }
         
         // surround each string with single quotes for the SQL query 
         date = "'" + date + "'";
@@ -318,7 +370,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         endTime = "'" + endTime + "'";
         username2 = "'" + username + "'";
                 
-        // insert the meeting into the assignment table so the user can see it in his calendar
+        // insert the meeting into the `empSchedule` table so the user can see it in his calendar
         query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
                 + "VALUES ( " + username2 + ", " + date + ", " + startTime + ", " + endTime + ", "
                 + "(SELECT m.topic "
@@ -326,9 +378,9 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 + "WHERE m.id = " + meetingID + "), 'public');";
         
         // execute the query
-        executeSQLQuery(query, "Inserted in to the calendar");
+        executeSQLQuery(query, "");
         
-        // change assignment table's acceptance field to 'accepted
+        // change assignment table's acceptance field to 'accepted'
         query = "UPDATE assignments "
                 + "SET acceptance = 'accepted' "
                 + "WHERE meetingID = " + meetingID + " "
@@ -336,6 +388,12 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         
         // execute the query
         executeSQLQuery(query, "");
+        
+        // show the updated table
+        showInvitationsInTable();
+        
+        // display a message
+        JOptionPane.showMessageDialog(null, "New Meeting Is Accepted");  
         
     }//GEN-LAST:event_jButtonAcceptActionPerformed
 
@@ -358,9 +416,16 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         executeSQLQuery(query, "Invitation Declined");
         
         query = getDeleteAssignmentQuery(meetingID);
+        
         // Delete the assignment
         //JOptionPane.showMessageDialog(null, query);   
         executeSQLQuery(query, "Employee Schedule deleted");
+
+        // show the updated table
+        showInvitationsInTable();
+
+        // Show a message to let the user know the invitation is declined succesfully
+        JOptionPane.showMessageDialog(null, "New Meeting Is Declined");
     }//GEN-LAST:event_jButtonDeclineActionPerformed
 
     // This method opens up the PreviousInvitations jFrame

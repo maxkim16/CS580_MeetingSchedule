@@ -168,8 +168,6 @@ public class EmpCheckPrevInvitation extends javax.swing.JFrame {
         jButtonDecline1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTableInvitations = new javax.swing.JTable();
-        jButtonAccept = new javax.swing.JButton();
-        jButtonDecline = new javax.swing.JButton();
         jLabelInvitation = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -198,24 +196,6 @@ public class EmpCheckPrevInvitation extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTableInvitations);
 
-        jButtonAccept.setBackground(new java.awt.Color(204, 255, 204));
-        jButtonAccept.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonAccept.setText("Accept");
-        jButtonAccept.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAcceptActionPerformed(evt);
-            }
-        });
-
-        jButtonDecline.setBackground(new java.awt.Color(255, 153, 153));
-        jButtonDecline.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonDecline.setText("Decline");
-        jButtonDecline.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDeclineActionPerformed(evt);
-            }
-        });
-
         jLabelInvitation.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
         jLabelInvitation.setText("Previous Invitations");
 
@@ -228,26 +208,15 @@ public class EmpCheckPrevInvitation extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 755, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 755, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(348, 348, 348)
                         .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(201, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(138, 138, 138)
-                .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
-                .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -268,71 +237,6 @@ public class EmpCheckPrevInvitation extends javax.swing.JFrame {
     private void jTableInvitationsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableInvitationsMouseClicked
 
     }//GEN-LAST:event_jTableInvitationsMouseClicked
-
-    private void jButtonAcceptActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAcceptActionPerformed
-
-        
-        /*
-        String query, username2,date, startTime, endTime, meetingID, task, visibility;
-
-        // get the number of the row the user clicked on in the table
-        int i = jTableInvitations.getSelectedRow();
-        model = (DefaultTableModel) jTableInvitations.getModel();
-
-        // get the date, startTime, endTime of the row the user clicked on
-        meetingID = model.getValueAt(i, 1).toString();
-        date = model.getValueAt(i, 4).toString();
-        startTime = model.getValueAt(i, 5).toString();
-        endTime = model.getValueAt(i, 6).toString();
-
-        // surround each string with single quotes for the SQL query
-        date = "'" + date + "'";
-        startTime = "'" + startTime + "'";
-        endTime = "'" + endTime + "'";
-        username2 = "'" + username + "'";
-
-        // insert the meeting into the assignment table so the user can see it in his calendar
-        query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
-        + "VALUES ( " + username2 + ", " + date + ", " + startTime + ", " + endTime + ", "
-        + "(SELECT m.topic "
-        + "FROM meetings m "
-        + "WHERE m.id = " + meetingID + "), 'visible');";
-
-        // execute the query
-        executeSQLQuery(query, "Inserted in to the calendar");
-
-        // change assignment table's acceptance field to 'accepted
-        query = "UPDATE assignments "
-        + "SET acceptance = 'accepted' "
-        + "WHERE meetingID = " + meetingID + " "
-        + "AND inviteeID = " + username2 + ";";
-
-        // execute the query
-        executeSQLQuery(query, "")
-        */
-
-    }//GEN-LAST:event_jButtonAcceptActionPerformed
-
-    private void jButtonDeclineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeclineActionPerformed
-        /*
-        String query, assignmentID, meetingID;
-        // get the number of the row the user clicked on in the table
-        int i = jTableInvitations.getSelectedRow();
-        model = (DefaultTableModel) jTableInvitations.getModel();
-        // get the id of the row the user clicked on
-        assignmentID = model.getValueAt(i, 0).toString();
-        meetingID = model.getValueAt(i,1).toString();
-
-        query = getDeclineQuery(assignmentID);
-        // Decline the invitation
-        executeSQLQuery(query, "Invitation Declined");
-
-        query = getDeleteAssignmentQuery(meetingID);
-        // Delete the assignment
-        //JOptionPane.showMessageDialog(null, query);
-        executeSQLQuery(query, "Employee Schedule deleted");
-        */
-    }//GEN-LAST:event_jButtonDeclineActionPerformed
 
     // This method prvents from terminating an application when a JFrame is closed
     private void myInitComponents() {
@@ -375,8 +279,6 @@ public class EmpCheckPrevInvitation extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAccept;
-    private javax.swing.JButton jButtonDecline;
     private javax.swing.JButton jButtonDecline1;
     private javax.swing.JLabel jLabelInvitation;
     private javax.swing.JScrollPane jScrollPane1;

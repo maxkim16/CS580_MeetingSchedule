@@ -5,7 +5,11 @@
  */
 package MeetingSchedule;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -32,8 +36,46 @@ public class EmpMain extends javax.swing.JFrame {
         this.username = username;
         this.pswd = pswd;
         jLabelUserName.setText(username);
+        
+        // show new invitations
+        showNewInvitations();
     }
 
+    // This method displays a message that shows new invitations for the user
+    private void showNewInvitations() {
+        String query = "SELECT m.ownerID, m.topic "
+                + "FROM meetings AS m "
+                + "INNER JOIN assignments AS a "
+                + "ON m.id = a.meetingID "
+                + "WHERE a.inviteeID = '" + username + "' AND "
+                + "a.acceptance = 'unchecked';";
+
+        // connect to database 
+        DBconnector db = new DBconnector();
+        Connection connection = db.connectToDB();
+        Statement st;
+        ResultSet rs;
+
+        int i = 0;
+        Object[] row = new Object[2];
+        try {
+            st = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = st.executeQuery(query);
+
+            // Loops until the last row from the rows retrrieved is reached
+            while (rs.next()) {
+                // retrives the value of the designated column in the current row of this Result Set Object
+                row[0] = rs.getString("ownerID");
+                row[1] = rs.getString("topic");
+                JOptionPane.showMessageDialog(null, "You hava a new meeting invitation "
+                        + "from " + row[0] + ": '" + row[1] + "'.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     // This method prvents from terminating an application when a JFrame is closed
     private void myInitComponents() {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -59,6 +101,7 @@ public class EmpMain extends javax.swing.JFrame {
         jButtonSendInvi = new javax.swing.JButton();
         jButtonManageMeeting = new javax.swing.JButton();
         jButtonMeetingStatus = new javax.swing.JButton();
+        jButtonChangePw = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,6 +112,7 @@ public class EmpMain extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabel1.setText("Hi,");
 
+        jButtonCalendar.setBackground(new java.awt.Color(204, 255, 255));
         jButtonCalendar.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonCalendar.setText("Calendar/Note");
         jButtonCalendar.addActionListener(new java.awt.event.ActionListener() {
@@ -77,6 +121,7 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonCheckInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonCheckInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonCheckInvi.setText("Check Invitations");
         jButtonCheckInvi.addActionListener(new java.awt.event.ActionListener() {
@@ -85,6 +130,7 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonSendMultiInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonSendMultiInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonSendMultiInvi.setText("Send Invitation/Available Time");
         jButtonSendMultiInvi.addActionListener(new java.awt.event.ActionListener() {
@@ -93,6 +139,7 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonSendInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonSendInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonSendInvi.setText("Send Invitation");
         jButtonSendInvi.addActionListener(new java.awt.event.ActionListener() {
@@ -101,6 +148,7 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonManageMeeting.setBackground(new java.awt.Color(204, 255, 204));
         jButtonManageMeeting.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonManageMeeting.setText("Manage Meeting");
         jButtonManageMeeting.addActionListener(new java.awt.event.ActionListener() {
@@ -109,11 +157,21 @@ public class EmpMain extends javax.swing.JFrame {
             }
         });
 
+        jButtonMeetingStatus.setBackground(new java.awt.Color(204, 255, 204));
         jButtonMeetingStatus.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonMeetingStatus.setText("Meeting Status");
         jButtonMeetingStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMeetingStatusActionPerformed(evt);
+            }
+        });
+
+        jButtonChangePw.setBackground(new java.awt.Color(255, 255, 255));
+        jButtonChangePw.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
+        jButtonChangePw.setText("Change Paasowrd");
+        jButtonChangePw.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonChangePwActionPerformed(evt);
             }
         });
 
@@ -129,15 +187,16 @@ public class EmpMain extends javax.swing.JFrame {
                         .addGap(431, 523, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonSendInvi)
                             .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButtonSendMultiInvi)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButtonCalendar)
-                                    .addComponent(jButtonCheckInvi))
+                                    .addComponent(jButtonCheckInvi)
+                                    .addComponent(jButtonSendInvi))
                                 .addGap(62, 62, 62)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButtonChangePw)
                                     .addComponent(jButtonMeetingStatus)
                                     .addComponent(jButtonManageMeeting))))
                         .addGap(0, 0, Short.MAX_VALUE))))
@@ -158,7 +217,9 @@ public class EmpMain extends javax.swing.JFrame {
                     .addComponent(jButtonCheckInvi)
                     .addComponent(jButtonMeetingStatus))
                 .addGap(18, 18, 18)
-                .addComponent(jButtonSendInvi)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonSendInvi)
+                    .addComponent(jButtonChangePw))
                 .addGap(26, 26, 26)
                 .addComponent(jButtonSendMultiInvi)
                 .addContainerGap(94, Short.MAX_VALUE))
@@ -218,6 +279,10 @@ public class EmpMain extends javax.swing.JFrame {
         e.setVisible(true);
     }//GEN-LAST:event_jButtonMeetingStatusActionPerformed
 
+    private void jButtonChangePwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonChangePwActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonChangePwActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -256,6 +321,7 @@ public class EmpMain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private datechooser.beans.DateChooserCombo dateChooserCombo1;
     private javax.swing.JButton jButtonCalendar;
+    private javax.swing.JButton jButtonChangePw;
     private javax.swing.JButton jButtonCheckInvi;
     private javax.swing.JButton jButtonManageMeeting;
     private javax.swing.JButton jButtonMeetingStatus;

@@ -168,11 +168,11 @@ public class EmpManageMeeting extends javax.swing.JFrame {
                 // refresh jtable data so the new data created is displayed as well
              
                 // Display the message
-                JOptionPane.showMessageDialog(null, message);
+                //JOptionPane.showMessageDialog(null, message);
             }
             else
             {
-                JOptionPane.showMessageDialog(null, message + " failed.");   
+                //JOptionPane.showMessageDialog(null, message + " failed.");   
             }
         }catch(Exception ex) {
             ex.printStackTrace();
@@ -507,22 +507,37 @@ public class EmpManageMeeting extends javax.swing.JFrame {
     // This method deletes the selected room in the table
     private void jButtonDeleteRoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteRoomActionPerformed
         modelMeetings = (DefaultTableModel) jTableMeetings.getModel();
+        String meetingID, date, st, et, topic;
+        int selectedRow;
+        
+        // If the user accepted the meeting already, delete it from their schedule
+        selectedRow = jTableMeetings.getSelectedRow();
+        date= jTableMeetings.getValueAt(selectedRow, 2).toString();
+        st = jTableMeetings.getValueAt(selectedRow, 3).toString();
+        et = jTableMeetings.getValueAt(selectedRow, 4).toString();
+        topic = jTableMeetings.getValueAt(selectedRow, 5).toString();
 
+        String deleteScheduleQry = "DELETE "
+                + "FROM empSchedule "
+                + "WHERE date = '" + date + "' "
+                + "AND startTime = '" + st + "' "
+                + "AND endTime = '" + et + "' "
+                + "AND task = '" + topic + "';";
+        executeSQLQuery(deleteScheduleQry, "deleted from employees' schedule");
+        
         // Delete all the invitations associated with the meeting
-        String meetingID;
         meetingID = jTextFieldID.getText();
         String deleteInvitQry = "DELETE "
                 + "FROM assignments "
                 + "WHERE meetingID = " + meetingID + ";";
         executeSQLQuery(deleteInvitQry, "assignments(invitations) deleted successfully");
-        
 
         // Delete the meeting
         String deleteMeetingQry = "DELETE "
                 + "FROM meetings "
                 + "WHERE ID = " + meetingID + ";";
-       executeSQLQuery(deleteMeetingQry, "meeting deleted successfully");
-       
+        executeSQLQuery(deleteMeetingQry, "meeting deleted successfully");
+
        // Refresh the meeting table
        modelMeetings.setRowCount(0);
        showMeetingsInTable();

@@ -67,6 +67,7 @@ public class EmpCalendarNote extends javax.swing.JFrame {
 
         //DefaultTableModel model = (DefaultTableModel) jTableEmpSch.getModel();
         model = (DefaultTableModel) jTableEmpSch.getModel();
+        model.setRowCount(0);
         
         String dateSelected = getDateFromCal();
 
@@ -115,8 +116,8 @@ public class EmpCalendarNote extends javax.swing.JFrame {
             if((st.executeUpdate(query)) == 1)
             {
                 // refresh jtable data so the new data created is displayed as well
-                model.setRowCount(0);
-                Show_EmpSch_In_JTable2();
+                //model.setRowCount(0);
+                //Show_EmpSch_In_JTable2();
                 
                 // Display the message
                 JOptionPane.showMessageDialog(null, message);
@@ -202,12 +203,16 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         jLabelVisibility.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabelVisibility.setText("Visibility");
 
+        jTextFieldDate.setText("YYYY-MM-DD");
+
+        jTextFieldStart.setText("HH:MM:SS");
         jTextFieldStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldStartActionPerformed(evt);
             }
         });
 
+        jTextFieldEnd.setText("HH:MM:SS");
         jTextFieldEnd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextFieldEndActionPerformed(evt);
@@ -413,6 +418,36 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         Show_EmpSch_In_JTable2(); // refreshed table will be shown
     }//GEN-LAST:event_jButtonEditActionPerformed
 
+    // This method returns 'true' if there is a time conflict with the user's schedule
+    private Boolean DoesConflictExist(String date, String st, String et) { 
+        
+        // get the query that displays all the meeting conflicts
+        String queryScheduleConflicts = getSchConflictQuery(date, st, et);
+                        
+        // connect to the database
+        DBconnector db = new DBconnector();
+        Connection connection = db.connectToDB();
+        Statement statement;
+        ResultSet rs;
+
+        try {
+            statement = connection.createStatement();
+            // execute the given SQL statement and get the result
+            rs = statement.executeQuery(queryScheduleConflicts);
+
+            // Loops until the last row of the rows retrrieved is reached
+            while (rs.next()) {
+                // if anything is returned, that means there is a conflict
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // if no data is returned, there is no conflict
+        return false;
+    }
+    
     // This method inserts a new schedule 
     private void jButtonInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonInsertActionPerformed
         String date = jTextFieldDate.getText();
@@ -420,6 +455,13 @@ public class EmpCalendarNote extends javax.swing.JFrame {
         String endTime = jTextFieldEnd.getText();
         String task = jTextFieldTask.getText();
         String visibility = jTextFieldVisibility.getText();
+
+        // checek if there is a schedule time conflict
+        // If there is a conflict, exit the function.
+        if ((DoesConflictExist(date, startTime, endTime)) == true) {
+            JOptionPane.showMessageDialog(null, "There is a time conflict. Please check your schedule.");
+            return;
+        }
 
         String query = "INSERT INTO `empSchedule`(`username`, `date`, `startTime`, `endTime`"
                 + ", `task`, `visibility`) VALUES ( '" + username + "', '" + date + "', '"
@@ -429,6 +471,16 @@ public class EmpCalendarNote extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButtonInsertActionPerformed
 
+    private String getSchConflictQuery(String date, String st, String et) {
+        String query = "SELECT * "
+                + "FROM empSchedule "
+                + "WHERE date = '" + date + "' "
+                + "AND username = '" + username + "' "
+                + "AND (startTime <= '" + st + "' AND '" + st + "' <= endTime "
+                + "OR '" + st + "' <= startTime AND startTime <= '" + et + "');";
+        return query;
+    }
+    
     private void jTextFieldStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldStartActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextFieldStartActionPerformed

@@ -131,7 +131,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
     }
 
     private void convertNameToUsername(String[] names) {
-        JOptionPane.showMessageDialog(null, "inside convert");
+        //JOptionPane.showMessageDialog(null, "inside convert");
         String query;
         int size = names.length;
 
@@ -276,7 +276,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         String query = "INSERT INTO meetings(room, ownerID, date, startTime, endTime, topic) "
                 + "VALUES ( " + room + ", '" + username + "', '" + date + "', '" + st + "', '"
                 + et + "', '" + topic + "'); ";
-        JOptionPane.showMessageDialog(null, query);
+        //JOptionPane.showMessageDialog(null, query);
         return query;
     }
 
@@ -289,14 +289,14 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
                 + "WHERE date = '" + date + "' "
                 + "AND startTime = '" + st + "' AND "
                 + "endTime = '" + et + "' AND topic = '" + topic + "'";
-        JOptionPane.showMessageDialog(null, queryToGetMeetingID);
+        //JOptionPane.showMessageDialog(null, queryToGetMeetingID);
         // i is set to 1 because the invitor does not need to add the meeting to his assignment
         // instead, the meeting will be added directly into his schedule
         for (int i = 1; i < names.length; i++) {
             queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
                     + "VALUES "
                     + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchecked', '" + username + "', 'unchecked');";
-            JOptionPane.showMessageDialog(null, queryToInsertAssignment);
+            //JOptionPane.showMessageDialog(null, queryToInsertAssignment);
             executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
         }
     }
@@ -305,7 +305,7 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         String query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
                 + "VALUES ('" + username + "', '" + date + "', '" + startTime + "', '" + endTime + "', '"
                 + topic + "', 'public')";
-        JOptionPane.showMessageDialog(null, query);
+        //JOptionPane.showMessageDialog(null, query);
         executeSQLQuery(query, "EmpSchedule Inserted Successfully");
     }
     
@@ -708,14 +708,15 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
     private void jButtonSendInviActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendInviActionPerformed
         String query, startTime, endTime, room, topic, date;
         inviTableModel = (DefaultTableModel) jTableInv.getModel();
-        // get the names of the selected employees
         int invTabSize = inviTableModel.getRowCount();
-        startTime = jTextFieldSt.getText();
-        endTime = jTextFieldEt.getText();
-
+        startTime = jTextFieldSt.getText(); 
+        endTime = jTextFieldEt.getText();   
+ 
+        // get the names of the selected employees
         String[] selectedNames = new String[invTabSize + 1];
         selectedNames[0] = username; // the owner of the meeting is automatically included
 
+        // if an invitee is added to the list, get their real name as well, not their username
         if (invTabSize >= 1) {
             for (int i = 1; i < invTabSize + 1; i++) {
                 selectedNames[i] = inviTableModel.getValueAt(i - 1, 0).toString();
@@ -741,6 +742,9 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
 
         // Put the meeting in the schedule of the invitor automatically
         insertEmpSchedule(date, startTime, endTime, topic);
+        
+        // Display a message
+        JOptionPane.showMessageDialog(null, "A New Meeting Invitation is Sent");
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
     // Display the meeting conflicts

@@ -198,7 +198,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         String query = "INSERT INTO meetings(room, ownerID, date, startTime, endTime, topic) "
                 + "VALUES ( " + room + ", '" + username + "', '" + date + "', '" + st + "', '"
                 + et + "', '" + topic + "'); ";
-        JOptionPane.showMessageDialog(null, query);
+        //JOptionPane.showMessageDialog(null, query);
         return query;
     }
     
@@ -211,14 +211,14 @@ public class EmpSendInvitation extends javax.swing.JFrame {
                 + "WHERE date = '" + date + "' "
                 + "AND startTime = '" + st + "' AND "
                 + "endTime = '" + et + "' AND topic = '" + topic + "'";
-        JOptionPane.showMessageDialog(null, queryToGetMeetingID);
+        //JOptionPane.showMessageDialog(null, queryToGetMeetingID);
         // i is set to 1 because the invitor does not need to add the meeting to his assignment
         // instead, the meeting will be added directly into his schedule
         for (int i = 1; i < names.length; i++) {
             queryToInsertAssignment = "INSERT INTO assignments (meetingID, inviteeID, acceptance, invitorID, checked) "
                     + "VALUES "
                     + "((" + queryToGetMeetingID + "), '" + names[i] + "', 'unchecked', '" + username + "', 'unchecked');";
-            JOptionPane.showMessageDialog(null, queryToInsertAssignment);
+            //JOptionPane.showMessageDialog(null, queryToInsertAssignment);
             executeSQLQuery(queryToInsertAssignment, "Assignment Inserted Successfully");
         }
     }
@@ -227,7 +227,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         String query = "INSERT INTO empSchedule (username, date, startTime, endTime, task, visibility) "
                 + "VALUES ('" + username + "', '" + date + "', '" + startTime + "', '" + endTime + "', '"
                 + topic + "', 'public')";
-                    JOptionPane.showMessageDialog(null, query);
+                    //JOptionPane.showMessageDialog(null, query);
                     executeSQLQuery(query, "EmpSchedule Inserted Successfully");
     }
 
@@ -329,7 +329,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
     }
 
     private void convertNameToUsername(String[] names) {
-        JOptionPane.showMessageDialog(null, "inside convert");
+        //JOptionPane.showMessageDialog(null, "inside convert");
         String query;
         int size = names.length;
 
@@ -432,6 +432,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
             }
         });
 
+        jButtonAvaTime.setBackground(new java.awt.Color(255, 255, 204));
         jButtonAvaTime.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonAvaTime.setText("Available Time Slots");
         jButtonAvaTime.addActionListener(new java.awt.event.ActionListener() {
@@ -468,6 +469,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelAvailTime.setFont(new java.awt.Font("Lucida Grande", 0, 14)); // NOI18N
         jLabelAvailTime.setText("Available Time Slots");
 
+        jButtonSendInvi.setBackground(new java.awt.Color(204, 255, 204));
         jButtonSendInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonSendInvi.setText("Send Invitations");
         jButtonSendInvi.addActionListener(new java.awt.event.ActionListener() {
@@ -479,6 +481,7 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         jLabelTopic.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jLabelTopic.setText("Topic:");
 
+        jButtonAvaRooms.setBackground(new java.awt.Color(255, 255, 204));
         jButtonAvaRooms.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
         jButtonAvaRooms.setText("Available Rooms");
         jButtonAvaRooms.addActionListener(new java.awt.event.ActionListener() {
@@ -700,6 +703,10 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         
         // Put the meeting in the schedule of the invitor automatically
         insertEmpSchedule(date, startTime, endTime, topic);
+        
+        // Display a message
+        JOptionPane.showMessageDialog(null, "A New Meeting Invitation is Sent.");
+
     }//GEN-LAST:event_jButtonSendInviActionPerformed
 
 
@@ -724,11 +731,17 @@ public class EmpSendInvitation extends javax.swing.JFrame {
         endTime = timeTableModel.getValueAt(rowSelected, 1).toString(); // store the endTime
         
         // execute the query and display
-        query = getAvaRoomQry(date, startTime, endTime, numOfInvitees);
+        // numOfInvitees is added by 1 for the invitor who is creating the meeting
+        query = getAvaRoomQry(date, startTime, endTime, numOfInvitees + 1);
         
         // show available rooms
         roomTableModel.setRowCount(0); // refresh the table
         showAvaRoom(query);
+        
+        // Display a message if there exists no available rooms
+        if(jTableRoom.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "There are no available rooms at thie time.");
+        }
         
     }//GEN-LAST:event_jButtonAvaRoomsActionPerformed
 

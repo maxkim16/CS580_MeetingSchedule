@@ -282,14 +282,16 @@ public class EmpMain extends javax.swing.JFrame {
         empMan.setVisible(true);
     }//GEN-LAST:event_jButtonManageMeetingActionPerformed
 
-    // Opens up the EmpMeetingStatus jFrame
+    // Opens up the EmpMeetingStatus 
     private void jButtonMeetingStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonMeetingStatusActionPerformed
         EmpMeetingStatus e = new EmpMeetingStatus(username);
         e.setVisible(true);
     }//GEN-LAST:event_jButtonMeetingStatusActionPerformed
 
+    // This method opens up the ChangePassword jFrame
     private void jButtonChangePwActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonChangePwActionPerformed
-        // TODO add your handling code here:
+        ChangePassword c = new ChangePassword(username);
+        c.setVisible(true);
     }//GEN-LAST:event_jButtonChangePwActionPerformed
 
     /**

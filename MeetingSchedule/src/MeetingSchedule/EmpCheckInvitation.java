@@ -63,7 +63,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
         ResultSet rs;
 
         int i = 0;
-        Object[] row = new Object[8];
+        Object[] row = new Object[9];
         try {
             st = connection.createStatement();
             // execute the given SQL statement and get the result
@@ -80,6 +80,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                 row[5] = rs.getString("startTime");
                 row[6] = rs.getString("endTime");
                 row[7] = rs.getString("acceptance");
+                row[8] = rs.getString("room");
                 model.addRow(row);
             }
         } catch (Exception e) {
@@ -106,7 +107,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
           String query;
           // Get the user's invitations and important information associated with the invitations, such as
           // the date, time, invitor, etc.
-          query = "SELECT a.id, m.id as meetingID, m.topic, e.name AS invitorName, m.date, m.startTime, m.endTime, a.acceptance "
+          query = "SELECT a.id, m.id as meetingID, m.topic, e.name AS invitorName, m.date, m.startTime, m.endTime, a.acceptance, m.room "
                   + "FROM assignments a "
                   + "INNER JOIN meetings m ON a.meetingID = m.id "
                   + "INNER JOIN employees e ON m.ownerID = e.username "
@@ -199,7 +200,7 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "meetingID", "topic", "Invitor", "date", "startTime", "endTime", "acceptance"
+                "id", "meetingID", "topic", "Invitor", "date", "startTime", "endTime", "acceptance", "room"
             }
         ));
         jTableInvitations.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -255,13 +256,6 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 755, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(69, 69, 69)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(348, 348, 348)
                         .addComponent(jLabelInvitation, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
@@ -269,14 +263,22 @@ public class EmpCheckInvitation extends javax.swing.JFrame {
                         .addComponent(jButtonDecline2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonDecline1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addContainerGap(470, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButtonAccept, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonDecline, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(138, 138, 138)
+                .addGap(135, 135, 135)
                 .addComponent(jButtonAccept, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38)
+                .addGap(41, 41, 41)
                 .addComponent(jButtonDecline, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()

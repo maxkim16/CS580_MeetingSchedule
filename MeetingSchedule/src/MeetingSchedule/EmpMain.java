@@ -123,7 +123,7 @@ public class EmpMain extends javax.swing.JFrame {
 
         jButtonCheckInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonCheckInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonCheckInvi.setText("Check Invitations");
+        jButtonCheckInvi.setText("Check Meeting Invitations");
         jButtonCheckInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCheckInviActionPerformed(evt);
@@ -132,7 +132,7 @@ public class EmpMain extends javax.swing.JFrame {
 
         jButtonSendMultiInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonSendMultiInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonSendMultiInvi.setText("Send Invitation/Available Time");
+        jButtonSendMultiInvi.setText("Available Time Slots & Send Meeting Invitation");
         jButtonSendMultiInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSendMultiInviActionPerformed(evt);
@@ -141,7 +141,7 @@ public class EmpMain extends javax.swing.JFrame {
 
         jButtonSendInvi.setBackground(new java.awt.Color(255, 204, 204));
         jButtonSendInvi.setFont(new java.awt.Font("Lucida Grande", 0, 18)); // NOI18N
-        jButtonSendInvi.setText("Send Invitation");
+        jButtonSendInvi.setText("Send Meeting Invitation");
         jButtonSendInvi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSendInviActionPerformed(evt);
@@ -184,22 +184,27 @@ public class EmpMain extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(431, 523, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonSendMultiInvi)
+                            .addComponent(jButtonSendMultiInvi))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButtonChangePw))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButtonCalendar)
                                     .addComponent(jButtonCheckInvi)
                                     .addComponent(jButtonSendInvi))
-                                .addGap(62, 62, 62)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 209, Short.MAX_VALUE)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButtonChangePw)
                                     .addComponent(jButtonMeetingStatus)
                                     .addComponent(jButtonManageMeeting))))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(73, 73, 73))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -222,18 +227,22 @@ public class EmpMain extends javax.swing.JFrame {
                     .addComponent(jButtonChangePw))
                 .addGap(26, 26, 26)
                 .addComponent(jButtonSendMultiInvi)
-                .addContainerGap(94, Short.MAX_VALUE))
+                .addContainerGap(172, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();

@@ -688,7 +688,8 @@ public class EmpSendInvitationNotAva extends javax.swing.JFrame {
         endTime = jTextFieldEt.getText(); // store the endTime
 
         // execute the query and display
-        query = getAvaRoomQuery(date, startTime, endTime, numOfInvitees);
+        // numOfInvitees is added by 1 since the invitor is attending
+        query = getAvaRoomQuery(date, startTime, endTime, numOfInvitees + 1);
 
         // show available rooms
         roomTableModel.setRowCount(0); // refresh the table
